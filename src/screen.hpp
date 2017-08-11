@@ -11,8 +11,8 @@
 
 #include <boost/program_options.hpp>
 #include "commands.hpp"
+#include "msdf.hpp"
 #include "particlestream.hpp"
-#include "mcfd.hpp"
 
 class McfdCommand_screen: public McfdCommand
 {

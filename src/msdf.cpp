@@ -13,28 +13,27 @@
 
 #include <iostream>
 
-
-CommandMap mcfdCommands;
+CommandMap msdfCommands;
 
 int main(int argc, char **argv)
 {
-  register_commands(mcfdCommands);
+  register_commands(msdfCommands);
 
   if (argc < 2)
   {
-    print_help(mcfdCommands);
+    print_help(msdfCommands);
     exit(-1);
   }
 
   std::string command(argv[1]);
 
-  if (mcfdCommands.count(command)==0)
+  if (msdfCommands.count(command)==0)
   {
-    print_help(mcfdCommands);
+    print_help(msdfCommands);
     exit(-1);
   }
 
-  pMcfdCommand theCommand = mcfdCommands[command]->makeCommand();
+  pMcfdCommand theCommand = msdfCommands[command]->makeCommand();
   try
   {
     theCommand->execute(argc-1, &(argv[1]));

@@ -8,11 +8,12 @@
 
 #ifndef HDFSTREAM_H
 #define HDFSTREAM_H
+
 //-----------------------------------------------------------------------------
 
 #define HSCHMITZ_OVERRIDE_H5_HAVE_PARALLEL
 
-#include "mcfd.hpp"
+#include "msdf.hpp"
 
 #include <hdf5.h>
 

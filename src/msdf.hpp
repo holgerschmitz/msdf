@@ -1,12 +1,12 @@
 /*
- * mcfd.h
+ * msdf.hpp
  *
  *  Created on: 5 Oct 2010
  *      Author: Holger Schmitz
  */
 
-#ifndef MCFD_H_
-#define MCFD_H_
+#ifndef MSDF_MSDF_HPP_
+#define MSDF_MSDF_HPP_
 
 #include <schnek/grid.hpp>
 #include <schnek/grid/gridcheck.hpp>
@@ -14,14 +14,14 @@
 #include <vector>
 
 #ifdef NDEBUG
-#define McfdGridChecker schnek::GridNoArgCheck
+#define MsdfGridChecker schnek::GridNoArgCheck
 #else
-#define McfdGridChecker schnek::GridAssertCheck
+#define MsdfGridChecker schnek::GridAssertCheck
 #endif
 
-typedef schnek::Grid<double, 1, McfdGridChecker> DataGrid1d;
-typedef schnek::Grid<double, 2, McfdGridChecker> DataGrid2d;
-typedef schnek::Grid<double, 3, McfdGridChecker> DataGrid3d;
+typedef schnek::Grid<double, 1, MsdfGridChecker> DataGrid1d;
+typedef schnek::Grid<double, 2, MsdfGridChecker> DataGrid2d;
+typedef schnek::Grid<double, 3, MsdfGridChecker> DataGrid3d;
 
 typedef boost::shared_ptr<DataGrid1d> pDataGrid1d;
 typedef boost::shared_ptr<DataGrid2d> pDataGrid2d;
@@ -31,7 +31,7 @@ typedef DataGrid1d::IndexType GridIndex1d;
 typedef DataGrid2d::IndexType GridIndex2d;
 typedef DataGrid3d::IndexType GridIndex3d;
 
-typedef schnek::Grid<int, 1, McfdGridChecker> IntArray;
+typedef schnek::Grid<int, 1, MsdfGridChecker> IntArray;
 typedef boost::shared_ptr<IntArray> pIntArray;
 
 typedef std::vector<int> IntVector;
@@ -46,4 +46,4 @@ static const double kB = 1.3806503e-23;
 
 
 
-#endif /* MCFD_H_ */
+#endif /* MSDF_MSDF_HPP_ */

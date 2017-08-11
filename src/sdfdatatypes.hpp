@@ -9,9 +9,8 @@
 #ifndef SDFDATATYPES_H_
 #define SDFDATATYPES_H_
 
+#include "msdf.hpp"
 #include "sdfio.hpp"
-#include "mcfd.hpp"
-
 #include "sdfheader.hpp"
 #include "sdfblock.hpp"
 

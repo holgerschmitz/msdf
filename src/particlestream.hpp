@@ -132,7 +132,7 @@ class RawParticleStream : public ParticleStream, public BinaryIo
 
     int32_t species_count;
 
-    schnek::Grid<float, 1, McfdGridChecker> buffer;
+    schnek::Grid<float, 1, MsdfGridChecker> buffer;
     DataGrid1d speciesBuffer;
     bool end_reached;
 
