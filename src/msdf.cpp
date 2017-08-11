@@ -33,7 +33,7 @@ int main(int argc, char **argv)
     exit(-1);
   }
 
-  pMcfdCommand theCommand = msdfCommands[command]->makeCommand();
+  pMsdfCommand theCommand = msdfCommands[command]->makeCommand();
   try
   {
     theCommand->execute(argc-1, &(argv[1]));

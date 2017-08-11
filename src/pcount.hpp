@@ -13,7 +13,7 @@
 #include "commands.hpp"
 #include "particlestream.hpp"
 
-class McfdCommand_pcount : public McfdCommand
+class McfdCommand_pcount : public MsdfCommand
 {
   private:
     boost::program_options::options_description option_desc;

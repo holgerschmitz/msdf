@@ -16,7 +16,7 @@
 
 class CfdMeshVariable;
 
-class McfdCommand_tohdf : public McfdCommand
+class McfdCommand_tohdf : public MsdfCommand
 {
   private:
     boost::program_options::options_description option_desc;

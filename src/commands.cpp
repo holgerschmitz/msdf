@@ -19,9 +19,9 @@
 #include <iostream>
 #include <iomanip>
 
-void store_command_in_map(CommandMap &map, McfdCommandInfo *info)
+void store_command_in_map(CommandMap &map, McfdCommandFactory *info)
 {
-  map[info->name()] = pMcfdCommandInfo(info);
+  map[info->name()] = pMcfdCommandFactory(info);
 }
 
 void register_commands(CommandMap &map)
@@ -38,13 +38,13 @@ void register_commands(CommandMap &map)
 
 void print_help(CommandMap &map)
 {
-  std::cout << "\n  Manipulate cfd files\n\n  Usage:\n"
-      << "    mcfd command [options]\n\n"
+  std::cout << "\n  Manipulate SDF files\n\n  Usage:\n"
+      << "    msdf command [options]\n\n"
       << "  where 'command' is one of the following:\n\n";
 
   for (CommandMap::iterator it = map.begin(); it != map.end(); ++it)
   {
-    pMcfdCommandInfo info(it->second);
+    pMcfdCommandFactory info(it->second);
     std::cout << "      "<< std::setiosflags(std::ios::left) << std::setw(10)
         << info->name() << "  " << info->description() << std::endl;
   }
@@ -54,42 +54,42 @@ void print_help(CommandMap &map)
 
 
 
-pMcfdCommand McfdCommandInfo_ls::makeCommand()
+pMsdfCommand McfdCommandInfo_ls::makeCommand()
 {
-  return pMcfdCommand(new McfdCommand_ls());
+  return pMsdfCommand(new McfdCommand_ls());
 }
 
-pMcfdCommand McfdCommandInfo_tohdf::makeCommand()
+pMsdfCommand McfdCommandInfo_tohdf::makeCommand()
 {
-  return pMcfdCommand(new McfdCommand_tohdf());
+  return pMsdfCommand(new McfdCommand_tohdf());
 }
 
-pMcfdCommand McfdCommandInfo_pcount::makeCommand()
+pMsdfCommand McfdCommandInfo_pcount::makeCommand()
 {
-  return pMcfdCommand(new McfdCommand_pcount());
+  return pMsdfCommand(new McfdCommand_pcount());
 }
 
-pMcfdCommand McfdCommandInfo_penergy::makeCommand()
+pMsdfCommand McfdCommandInfo_penergy::makeCommand()
 {
-  return pMcfdCommand(new McfdCommand_penergy());
+  return pMsdfCommand(new McfdCommand_penergy());
 }
 
-pMcfdCommand McfdCommandInfo_phaseplot::makeCommand()
+pMsdfCommand McfdCommandInfo_phaseplot::makeCommand()
 {
-  return pMcfdCommand(new McfdCommand_phaseplot());
+  return pMsdfCommand(new McfdCommand_phaseplot());
 }
 
-pMcfdCommand McfdCommandInfo_screen::makeCommand()
+pMsdfCommand McfdCommandInfo_screen::makeCommand()
 {
-  return pMcfdCommand(new McfdCommand_screen());
+  return pMsdfCommand(new McfdCommand_screen());
 }
 
-pMcfdCommand McfdCommandInfo_angular::makeCommand()
+pMsdfCommand McfdCommandInfo_angular::makeCommand()
 {
-  return pMcfdCommand(new McfdCommand_angular());
+  return pMsdfCommand(new McfdCommand_angular());
 }
 
-pMcfdCommand McfdCommandInfo_distfunc::makeCommand()
+pMsdfCommand McfdCommandInfo_distfunc::makeCommand()
 {
-  return pMcfdCommand(new McfdCommand_distfunc());
+  return pMsdfCommand(new McfdCommand_distfunc());
 }

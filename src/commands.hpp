@@ -13,27 +13,48 @@
 #include <string>
 #include <map>
 
-class McfdCommand
+/** @brief Interface class for all msdf commands
+ *
+ * Each msdf command must implement the execute() function that will execute the command,
+ * and the print_help() function that should use prind out usage information for the command.
+ * Specifically, boost::program_options should be used to create a summary of command options.
+ */
+class MsdfCommand
 {
   public:
+    /// Virtual destructor is needed
+    virtual ~MsdfCommand() {}
+
+    /** @brief Abstract method that must be implemented to perform the command
+     *
+     * @param argc The number of command line arguments, excluding the msdf command itself
+     * @param argv The command line arguments, excluding the msdf command itself
+     */
     virtual void execute(int argc, char **argv) = 0;
+    /** @brief Abstract method that must be implemented to provide usage information for the command.
+     *
+     * This should print out a description of the command and what it does together with a complete
+     * summary of all command line options.
+     */
     virtual void print_help() = 0;
 };
 
-typedef boost::shared_ptr<McfdCommand> pMcfdCommand;
+/// A shared pointer to a MsdfCommand object
+typedef boost::shared_ptr<MsdfCommand> pMsdfCommand;
 
 
-class McfdCommandInfo
+class McfdCommandFactory
 {
   public:
+    virtual ~McfdCommandFactory() {}
     virtual std::string name() = 0;
     virtual std::string description() = 0;
-    virtual pMcfdCommand makeCommand() = 0;
+    virtual pMsdfCommand makeCommand() = 0;
 };
 
-typedef boost::shared_ptr<McfdCommandInfo> pMcfdCommandInfo;
+typedef boost::shared_ptr<McfdCommandFactory> pMcfdCommandFactory;
 
-typedef std::map<std::string, pMcfdCommandInfo> CommandMap;
+typedef std::map<std::string, pMcfdCommandFactory> CommandMap;
 
 void register_commands(CommandMap &map);
 void print_help(CommandMap &map);
@@ -42,24 +63,24 @@ void print_help(CommandMap &map);
 //====================    ls command    =====================
 //===========================================================
 
-class McfdCommandInfo_ls : public McfdCommandInfo
+class McfdCommandInfo_ls : public McfdCommandFactory
 {
   public:
     std::string name() { return "ls"; }
 
     std::string description()
     {
-      return "list the contents of a cfd file";
+      return "list the contents of an SDF file";
     }
 
-    pMcfdCommand makeCommand();
+    pMsdfCommand makeCommand();
 };
 
 //===========================================================
 //====================    tohdf command    ==================
 //===========================================================
 
-class McfdCommandInfo_tohdf : public McfdCommandInfo
+class McfdCommandInfo_tohdf : public McfdCommandFactory
 {
   public:
     std::string name() { return "toh5"; }
@@ -69,7 +90,7 @@ class McfdCommandInfo_tohdf : public McfdCommandInfo
       return "writes a data block to HDF5";
     }
 
-    pMcfdCommand makeCommand();
+    pMsdfCommand makeCommand();
 };
 
 
@@ -77,7 +98,7 @@ class McfdCommandInfo_tohdf : public McfdCommandInfo
 //====================    pcount command    ==================
 //===========================================================
 
-class McfdCommandInfo_pcount : public McfdCommandInfo
+class McfdCommandInfo_pcount : public McfdCommandFactory
 {
   public:
     std::string name() { return "pcount"; }
@@ -87,7 +108,7 @@ class McfdCommandInfo_pcount : public McfdCommandInfo
       return "counts the number of particles of each species";
     }
 
-    pMcfdCommand makeCommand();
+    pMsdfCommand makeCommand();
 };
 
 
@@ -95,7 +116,7 @@ class McfdCommandInfo_pcount : public McfdCommandInfo
 //====================    penergy command    ==================
 //===========================================================
 
-class McfdCommandInfo_penergy : public McfdCommandInfo
+class McfdCommandInfo_penergy : public McfdCommandFactory
 {
   public:
     std::string name() { return "penergy"; }
@@ -105,7 +126,7 @@ class McfdCommandInfo_penergy : public McfdCommandInfo
       return "calculates (nonrelativistic!) thermal energies of particles of each species";
     }
 
-    pMcfdCommand makeCommand();
+    pMsdfCommand makeCommand();
 };
 
 
@@ -113,7 +134,7 @@ class McfdCommandInfo_penergy : public McfdCommandInfo
 //====================    phaseplot command    ==================
 //===========================================================
 
-class McfdCommandInfo_phaseplot : public McfdCommandInfo
+class McfdCommandInfo_phaseplot : public McfdCommandFactory
 {
   public:
     std::string name() { return "phaseplot"; }
@@ -123,7 +144,7 @@ class McfdCommandInfo_phaseplot : public McfdCommandInfo
       return "Writes phase-plots for species and stores in hdf5 format.";
     }
 
-    pMcfdCommand makeCommand();
+    pMsdfCommand makeCommand();
 };
 
 
@@ -131,7 +152,7 @@ class McfdCommandInfo_phaseplot : public McfdCommandInfo
 //====================    screen command    ==================
 //===========================================================
 
-class McfdCommandInfo_screen : public McfdCommandInfo
+class McfdCommandInfo_screen : public McfdCommandFactory
 {
   public:
     std::string name() { return "screen"; }
@@ -141,7 +162,7 @@ class McfdCommandInfo_screen : public McfdCommandInfo
       return "Projects particles onto a screen and writes in ascii format.";
     }
 
-    pMcfdCommand makeCommand();
+    pMsdfCommand makeCommand();
 };
 
 
@@ -149,7 +170,7 @@ class McfdCommandInfo_screen : public McfdCommandInfo
 //====================    angular command    ==================
 //===========================================================
 
-class McfdCommandInfo_angular : public McfdCommandInfo
+class McfdCommandInfo_angular : public McfdCommandFactory
 {
   public:
     std::string name() { return "angular"; }
@@ -159,14 +180,14 @@ class McfdCommandInfo_angular : public McfdCommandInfo
       return "Writes angular distribution plot for each species and stores in plain ascii format files readable by GNUplot.";
     }
 
-    pMcfdCommand makeCommand();
+    pMsdfCommand makeCommand();
 };
 
 //===========================================================
 //====================    distfunc command    ==================
 //===========================================================
 
-class McfdCommandInfo_distfunc : public McfdCommandInfo
+class McfdCommandInfo_distfunc : public McfdCommandFactory
 {
   public:
     std::string name() { return "distfunc"; }
@@ -176,7 +197,7 @@ class McfdCommandInfo_distfunc : public McfdCommandInfo
       return "Writes integrated distribution function for each species and stores in plain ascii format files readable by GNUplot.";
     }
 
-    pMcfdCommand makeCommand();
+    pMsdfCommand makeCommand();
 };
 
 #endif /* COMMANDS_H_ */

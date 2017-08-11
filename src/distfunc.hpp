@@ -14,7 +14,7 @@
 #include "msdf.hpp"
 #include "particlestream.hpp"
 
-class McfdCommand_distfunc: public McfdCommand
+class McfdCommand_distfunc: public MsdfCommand
 {
   private:
     typedef DataGrid1d::const_storage_iterator GridIt1;

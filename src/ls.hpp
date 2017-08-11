@@ -11,7 +11,7 @@
 #include <boost/program_options.hpp>
 #include "commands.hpp"
 
-class McfdCommand_ls : public McfdCommand
+class McfdCommand_ls : public MsdfCommand
 {
   private:
     boost::program_options::options_description option_desc;

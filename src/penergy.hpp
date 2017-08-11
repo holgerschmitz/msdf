@@ -13,7 +13,7 @@
 #include "commands.hpp"
 #include "particlestream.hpp"
 
-class McfdCommand_penergy : public McfdCommand
+class McfdCommand_penergy : public MsdfCommand
 {
   private:
     typedef DataGrid1d::const_storage_iterator GridIt1;
