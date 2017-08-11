@@ -38,16 +38,16 @@ int main(int argc, char **argv)
   {
     theCommand->execute(argc-1, &(argv[1]));
   }
-  catch (BlockNotFoundException ex)
+  catch (BlockNotFoundException &ex)
   {
     std::cerr << "ERROR!\n" << "Block '"<< ex.getName() << "' not found\n";
   }
-  catch (BlockTypeUnsupportedException ex)
+  catch (BlockTypeUnsupportedException &ex)
   {
     std::cerr << "ERROR!\n" << "Block type '"<< ex.getBlockType()
         << "' unsupported in block '"<< ex.getBlockName() <<"'\n";
   }
-  catch (GenericException ex)
+  catch (GenericException &ex)
   {
     std::cerr << "ERROR!\n" << ex.getMessage() <<"\n";
   }
