@@ -22,22 +22,22 @@ SdfMeshVariable::SdfMeshVariable(pIstream sdfStream, pSdfFileHeader header, SdfB
   this->readData(sdfStream, header, block);
 }
 
-pDataGrid1d SdfMeshVariable::get1dMesh()
+pDataGrid1d SdfMeshVariable::get1dMesh(int i)
 {
   if (rank!=1) throw GenericException("Wrong mesh dimension!");
-  return mesh1d;
+  return mesh1d[i];
 }
 
-pDataGrid2d SdfMeshVariable::get2dMesh()
+pDataGrid2d SdfMeshVariable::get2dMesh(int i)
 {
   if (rank!=2) throw GenericException("Wrong mesh dimension!");
-  return mesh2d;
+  return mesh2d[i];
 }
 
-pDataGrid3d SdfMeshVariable::get3dMesh()
+pDataGrid3d SdfMeshVariable::get3dMesh(int i)
 {
   if (rank!=3) throw GenericException("Wrong mesh dimension!");
-  return mesh3d;
+  return mesh3d[i];
 }
 
 int SdfMeshVariable::getRank()
@@ -45,34 +45,39 @@ int SdfMeshVariable::getRank()
   return rank;
 }
 
-double SdfMeshVariable::getMin()
+int SdfMeshVariable::getCount()
+{
+  return count;
+}
+
+double SdfMeshVariable::getMin(int i)
 {
   switch (getRank())
   {
     case 1:
-      return *std::min_element(this->mesh1d->begin(), this->mesh1d->end());
+      return *std::min_element(this->mesh1d[i]->begin(), this->mesh1d[i]->end());
       break;
     case 2:
-      return *std::min_element(this->mesh2d->begin(), this->mesh2d->end());
+      return *std::min_element(this->mesh2d[i]->begin(), this->mesh2d[i]->end());
       break;
     case 3:
-      return *std::min_element(this->mesh3d->begin(), this->mesh3d->end());
+      return *std::min_element(this->mesh3d[i]->begin(), this->mesh3d[i]->end());
       break;
   }
 }
 
-double SdfMeshVariable::getMax()
+double SdfMeshVariable::getMax(int i)
 {
   switch (getRank())
   {
     case 1:
-      return *std::max_element(this->mesh1d->begin(), this->mesh1d->end());
+      return *std::max_element(this->mesh1d[i]->begin(), this->mesh1d[i]->end());
       break;
     case 2:
-      return *std::max_element(this->mesh2d->begin(), this->mesh2d->end());
+      return *std::max_element(this->mesh2d[i]->begin(), this->mesh2d[i]->end());
       break;
     case 3:
-      return *std::max_element(this->mesh3d->begin(), this->mesh3d->end());
+      return *std::max_element(this->mesh3d[i]->begin(), this->mesh3d[i]->end());
       break;
   }
 }
@@ -108,6 +113,9 @@ void SdfMeshVariable::readData(pIstream sdfStream, pSdfFileHeader header, SdfBlo
       case sdf_point_variable:
         readParticleDataByPrecision(sdfStream, header, block, schnek::Type2Type<float>());
         break;
+      case sdf_lagrangian_mesh:
+        readLagrangianDataByPrecision(sdfStream, header, block, schnek::Type2Type<float>());
+        break;
       default:
         break;
     }
@@ -122,6 +130,9 @@ void SdfMeshVariable::readData(pIstream sdfStream, pSdfFileHeader header, SdfBlo
       case sdf_point_variable:
         readParticleDataByPrecision(sdfStream, header, block, schnek::Type2Type<float>());
         break;
+      case sdf_lagrangian_mesh:
+        readLagrangianDataByPrecision(sdfStream, header, block, schnek::Type2Type<double>());
+        break;
       default:
         break;
     }
@@ -133,7 +144,7 @@ void SdfMeshVariable::readData(pIstream sdfStream, pSdfFileHeader header, SdfBlo
 template<typename realtype>
 void SdfMeshVariable::readDataByPrecision(pIstream sdfStream, pSdfFileHeader header, SdfBlockHeader &block, realtype rt)
 {
-
+  count = 1;
   std::cerr << "  rank is " << rank << "\n";
   switch (rank)
   {
@@ -205,7 +216,7 @@ void SdfMeshVariable::readMeshData(pIstream sdfStream, pSdfFileHeader header, Sd
 template<typename realtype>
 void SdfMeshVariable::readParticleDataByPrecision(pIstream sdfStream, pSdfFileHeader header, SdfBlockHeader &block, realtype rt)
 {
-
+  count = 1;
   typedef typename realtype::OriginalType Real;
 
   int64_t npart;
@@ -234,6 +245,77 @@ void SdfMeshVariable::readParticleDataByPrecision(pIstream sdfStream, pSdfFileHe
     for (int64_t i=0; i<npart; ++i) raw[i] = data[i]; // type cast
     delete[] data;
   }
+}
+
+template<typename realtype>
+void SdfMeshVariable::readLagrangianDataByPrecision(pIstream sdfStream, pSdfFileHeader header, SdfBlockHeader &block, realtype rt)
+{
+
+  std::cerr << "  rank is " << rank << "\n";
+  switch (rank)
+  {
+    case 1:
+      mesh1d = pDataGrid1d(new DataGrid1d());
+      this->readLagrangianMeshData(sdfStream, header, block, rt, *mesh1d);
+      break;
+    case 2:
+      mesh2d = pDataGrid2d(new DataGrid2d());
+      this->readLagrangianMeshData(sdfStream, header, block, rt, *mesh2d);
+      break;
+    case 3:
+      mesh3d = pDataGrid3d(new DataGrid3d());
+      this->readLagrangianMeshData(sdfStream, header, block, rt, *mesh3d);
+      break;
+    default:
+      throw GenericException("CFD file contains mesh data with rank other than 1,2 or 3!");
+      break;
+  }
+}
+
+template<typename realtype, class GridType>
+void SdfMeshVariable::readLagrangianMeshData(pIstream sdfStream, pSdfFileHeader header, SdfBlockHeader &block, realtype, GridType &grid)
+{
+  int stringLength = header->getStringLength();
+
+  typedef typename realtype::OriginalType Real;
+  typedef schnek::Vector<int32_t, GridType::Rank> Index;
+
+  const int rank = GridType::Rank;
+  Index arrsize;
+  int32_t stagger;
+
+  for (int i=0; i<rank; ++i) this->readValue(*sdfStream, arrsize[rank-1-i]);
+  this->readValue(*sdfStream, stagger);
+
+  sdfStream->seekg(block.getDataLocation());
+
+  grid.resize(arrsize);
+
+  // we don't use arrsize.product() because the return type is only int32_t and
+  // might be too small
+  int64_t length = 1;
+  for (int i=0; i<rank; ++i) length *= arrsize[i];
+
+  Real *data;
+  if (sizeof(Real)==sizeof(typename GridType::value_type))
+    data = (Real*)grid.getRawData();
+  else
+    data = new Real[length];
+
+  // for reading from a character stream
+  char *ch = (char*)data;
+
+  sdfStream->read(ch, length*sizeof(Real));
+
+  // if GridType::value_type is the same as Real then we're done,
+  // otherwise we now need to copy and delete the data pointer
+  if (sizeof(Real)!=sizeof(typename GridType::value_type))
+  {
+    typename GridType::value_type *raw = grid.getRawData();
+    for (int64_t i=0; i<length; ++i) raw[i] = data[i]; // type cast
+    delete[] data;
+  }
+
 }
 
 //==============================================================================

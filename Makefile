@@ -5,7 +5,7 @@ OFLAGS  = -g -O0 -Wall
 #OFLAGS  = -O3 -Wall
 #OFLAGS  = -O3 -Wall -DNDEBUG
 
-INCLUDE = -I/usr/local/include
+INCLUDE = -I/usr/local/include -I/usr/include/hdf5/openmpi
 #CXX     = $(X_CXX)
 CXX     = mpic++
 
@@ -22,7 +22,7 @@ SOURCES = \
   src/distfunc.cpp \
   src/hdfstream.cpp \
   src/ls.cpp \
-  src/mcfd.cpp \
+  src/msdf.cpp \
   src/particlestream.cpp \
   src/pcount.cpp \
   src/penergy.cpp \
@@ -37,12 +37,12 @@ SOURCES = \
 
 OBJECTS = $(SOURCES:.cpp=.o)
 
-LDFLAGS = 
+LDFLAGS = -Wl,-rpath=/usr/lib/x86_64-linux-gnu/hdf5/openmpi -L/usr/lib/x86_64-linux-gnu/hdf5/openmpi
 
 LOADLIBS = \
   -lhdf5_hl \
   -lhdf5 \
-  -lm \ 
+  -lm \
   -lboost_program_options \
   -lboost_filesystem \
   -lboost_regex \

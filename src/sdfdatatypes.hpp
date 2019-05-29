@@ -22,13 +22,15 @@ class SdfMeshVariable : public SdfBlockData
     SdfMeshVariable(pIstream sdfStream, pSdfFileHeader header, SdfBlockHeader &block_);
     SdfBlockType getBlockType() { return block.getBlockType(); }
     int getRank();
-    pDataGrid1d get1dMesh();
-    pDataGrid2d get2dMesh();
-    pDataGrid3d get3dMesh();
+    int getCount();
+    pDataGrid1d get1dMesh(int i);
+    pDataGrid2d get2dMesh(int i);
+    pDataGrid3d get3dMesh(int i);
 
-    double getMin();
-    double getMax();
+    double getMin(int i);
+    double getMax(int i);
   private:
+    int count;
     int32_t rank;
     int32_t precision;
 
@@ -36,9 +38,9 @@ class SdfMeshVariable : public SdfBlockData
     std::string units;
     std::string meshId;
 
-    pDataGrid1d mesh1d;
-    pDataGrid2d mesh2d;
-    pDataGrid3d mesh3d;
+    std::vector<pDataGrid1d> mesh1d;
+    std::vector<pDataGrid2d> mesh2d;
+    std::vector<pDataGrid3d> mesh3d;
 
     IntArray arrsize;
 
@@ -59,6 +61,12 @@ class SdfMeshVariable : public SdfBlockData
 
     template<typename realtype, class GridType>
     void readParticleData(pIstream sdfStream, pSdfFileHeader header, SdfBlockHeader &block, realtype, GridType &grid);
+
+    template<typename realtype>
+    void readLagrangianDataByPrecision(pIstream sdfStream, pSdfFileHeader header, SdfBlockHeader &block, realtype);
+
+    template<typename realtype, class GridType>
+    void readLagrangianMeshData(pIstream sdfStream, pSdfFileHeader header, SdfBlockHeader &block, realtype, GridType &grid);
 };
 
 class SdfMeshVariableStream : public SdfBlockDataStream

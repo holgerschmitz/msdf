@@ -26,11 +26,12 @@ void CfdMeshDataImpl::readData()
 }
 
 int CfdMeshDataImpl::getRank() { return mData->getRank(); }
-pDataGrid1d CfdMeshDataImpl::get1dMesh() { return mData->get1dMesh(); }
-pDataGrid2d CfdMeshDataImpl::get2dMesh() { return mData->get2dMesh(); }
-pDataGrid3d CfdMeshDataImpl::get3dMesh() { return mData->get3dMesh(); }
-double CfdMeshDataImpl::getMin() { return mData->getMin(); }
-double CfdMeshDataImpl::getMax() { return mData->getMax(); }
+int CfdMeshDataImpl::getCount() { return 1; }
+pDataGrid1d CfdMeshDataImpl::get1dMesh(int i) { return mData->get1dMesh(); }
+pDataGrid2d CfdMeshDataImpl::get2dMesh(int i) { return mData->get2dMesh(); }
+pDataGrid3d CfdMeshDataImpl::get3dMesh(int i) { return mData->get3dMesh(); }
+double CfdMeshDataImpl::getMin(int i) { return mData->getMin(); }
+double CfdMeshDataImpl::getMax(int i) { return mData->getMax(); }
 
 
 
@@ -50,11 +51,12 @@ void SdfMeshDataImpl::readData()
 }
 
 int SdfMeshDataImpl::getRank() { return mData->getRank(); }
-pDataGrid1d SdfMeshDataImpl::get1dMesh() { return mData->get1dMesh(); }
-pDataGrid2d SdfMeshDataImpl::get2dMesh() { return mData->get2dMesh(); }
-pDataGrid3d SdfMeshDataImpl::get3dMesh() { return mData->get3dMesh(); }
-double SdfMeshDataImpl::getMin() { return mData->getMin(); }
-double SdfMeshDataImpl::getMax() { return mData->getMax(); }
+int SdfMeshDataImpl::getCount() { return mData->getCount(); }
+pDataGrid1d SdfMeshDataImpl::get1dMesh(int i) { return mData->get1dMesh(i); }
+pDataGrid2d SdfMeshDataImpl::get2dMesh(int i) { return mData->get2dMesh(i); }
+pDataGrid3d SdfMeshDataImpl::get3dMesh(int i) { return mData->get3dMesh(i); }
+double SdfMeshDataImpl::getMin(int i) { return mData->getMin(i); }
+double SdfMeshDataImpl::getMax(int i) { return mData->getMax(i); }
 
 
 void MeshData::setProgramOptions(boost::program_options::options_description &option_desc,

@@ -32,8 +32,6 @@ class BinaryIo
       void *ptr = &data;
       char *ch = (char*)ptr;
 
-//      std::cerr << "readValue(" << sizeof(T) << ")\n";
-
       in.read(ch,sizeof(T));
     }
 

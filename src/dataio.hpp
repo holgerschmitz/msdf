@@ -21,13 +21,15 @@
 class MeshDataImpl
 {
   public:
+    virtual ~MeshDataImpl() {}
     virtual void readData() = 0;
     virtual int getRank() = 0;
-    virtual pDataGrid1d get1dMesh() = 0;
-    virtual pDataGrid2d get2dMesh() = 0;
-    virtual pDataGrid3d get3dMesh() = 0;
-    virtual double getMin() = 0;
-    virtual double getMax() = 0;
+    virtual int getCount() = 0;
+    virtual pDataGrid1d get1dMesh(int i) = 0;
+    virtual pDataGrid2d get2dMesh(int i) = 0;
+    virtual pDataGrid3d get3dMesh(int i) = 0;
+    virtual double getMin(int i) = 0;
+    virtual double getMax(int i) = 0;
 };
 typedef boost::shared_ptr<MeshDataImpl> pMeshDataImpl;
 
@@ -37,11 +39,12 @@ class CfdMeshDataImpl : public MeshDataImpl
     CfdMeshDataImpl(std::string inputName_, std::string blockName_);
     void readData();
     int getRank();
-    pDataGrid1d get1dMesh();
-    pDataGrid2d get2dMesh();
-    pDataGrid3d get3dMesh();
-    double getMin();
-    double getMax();
+    int getCount();
+    pDataGrid1d get1dMesh(int i);
+    pDataGrid2d get2dMesh(int i);
+    pDataGrid3d get3dMesh(int i);
+    double getMin(int i);
+    double getMax(int i);
   private:
     pCfdFile cfdFile;
     pCfdBlockData data;
@@ -57,11 +60,12 @@ class SdfMeshDataImpl : public MeshDataImpl
     SdfMeshDataImpl(std::string inputName_, std::string blockName_);
     void readData();
     int getRank();
-    pDataGrid1d get1dMesh();
-    pDataGrid2d get2dMesh();
-    pDataGrid3d get3dMesh();
-    double getMin();
-    double getMax();
+    int getCount();
+    pDataGrid1d get1dMesh(int i);
+    pDataGrid2d get2dMesh(int i);
+    pDataGrid3d get3dMesh(int i);
+    double getMin(int i);
+    double getMax(int i);
   private:
     pSdfFile sdfFile;
     pSdfBlockData data;
@@ -89,11 +93,12 @@ class MeshData
     std::string getBlockName() { return blockName; }
 
     int getRank() { return impl->getRank(); }
-    pDataGrid1d get1dMesh() { return impl->get1dMesh(); }
-    pDataGrid2d get2dMesh() { return impl->get2dMesh(); }
-    pDataGrid3d get3dMesh() { return impl->get3dMesh(); }
-    double getMin() { return impl->getMin(); }
-    double getMax() { return impl->getMax(); }
+    int getCount() { return impl->getCount(); }
+    pDataGrid1d get1dMesh(int i) { return impl->get1dMesh(i); }
+    pDataGrid2d get2dMesh(int i) { return impl->get2dMesh(i); }
+    pDataGrid3d get3dMesh(int i) { return impl->get3dMesh(i); }
+    double getMin(int i) { return impl->getMin(i); }
+    double getMax(int i) { return impl->getMax(i); }
 };
 
 
