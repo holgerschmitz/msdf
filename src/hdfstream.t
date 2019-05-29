@@ -1,5 +1,6 @@
 #include <sstream>
-#include "cfdio.hpp"
+
+#include "binaryio.hpp"
 
 template<typename TYPE, int RANK, template<int> class Checking>
 HDFistream& HDFistream::operator>>(schnek::Grid<TYPE, RANK, Checking>& grid)

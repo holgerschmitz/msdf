@@ -13,10 +13,6 @@ CXXFLAGS = $(OFLAGS)
 
 SOURCES = \
   src/angular.cpp \
-  src/cfdblock.cpp \
-  src/cfddatatypes.cpp \
-  src/cfdfile.cpp \
-  src/cfdheader.cpp \
   src/commands.cpp \
   src/dataio.cpp \
   src/distfunc.cpp \

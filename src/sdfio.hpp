@@ -9,12 +9,12 @@
 #ifndef SDFIO_H_
 #define SDFIO_H_
 
-#include "cfdio.hpp"
 #include <string>
 #include <iostream>
 #include <boost/cstdint.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/algorithm/string.hpp>
+#include "binaryio.hpp"
 
 /**
  * Enumeration for SDF data block types
@@ -39,6 +39,9 @@ typedef enum {sdf_null_type, sdf_integer4, sdf_integer8, sdf_real4, sdf_real8, s
  */
 typedef enum {sdf_null_geom, sdf_cartesian, sdf_cylindrical, sdf_spherical} SDFGeometryType;
 
+/**
+ *
+ */
 class SdfIo : public BinaryIo
 {
   protected:

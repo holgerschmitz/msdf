@@ -20,7 +20,7 @@
 
 namespace po = boost::program_options;
 
-inline double McfdCommand_angular::getValue(int axis, double px, double py, double pz, double x, double y)
+inline double MsdfCommand_angular::getValue(int axis, double px, double py, double pz, double x, double y)
 {
   int id;
   if (axis==0) id = xAxisId;
@@ -37,7 +37,7 @@ inline double McfdCommand_angular::getValue(int axis, double px, double py, doub
   return x;
 }
 
-McfdCommand_angular::McfdCommand_angular()
+MsdfCommand_angular::MsdfCommand_angular()
   : option_desc("Options for the 'phaseplot' command")
 {
   streamFact.addMesh().addSpecies().addMomentum().addWeight().setProgramOptions(option_desc);
@@ -58,7 +58,7 @@ McfdCommand_angular::McfdCommand_angular()
 }
 
 
-void McfdCommand_angular::execute(int argc, char **argv)
+void MsdfCommand_angular::execute(int argc, char **argv)
 {
   double minGamma2;
   double maxGamma2;
@@ -223,7 +223,7 @@ void McfdCommand_angular::execute(int argc, char **argv)
 
 
 
-char McfdCommand_angular::makeAxisId(std::string axisStr)
+char MsdfCommand_angular::makeAxisId(std::string axisStr)
 {
   if (axisStr == "x") return 0;
   if (axisStr == "y") return 1;
@@ -233,7 +233,7 @@ char McfdCommand_angular::makeAxisId(std::string axisStr)
   return 0;
 }
 
-void McfdCommand_angular::print_help()
+void MsdfCommand_angular::print_help()
 {
   std::cout << "\n  Manipulate cfd files: creates an angular distribution plot for each species and stores in plain ascii format\n\n  Usage:\n"
         << "    mcfd angular [options] <input>\n\n"
@@ -246,7 +246,7 @@ void McfdCommand_angular::print_help()
         << "  and equivalently for yrmin and yrmax\n";
 }
 
-std::string McfdCommand_angular::createOutputFile(int speciesId)
+std::string MsdfCommand_angular::createOutputFile(int speciesId)
 {
   std::string speciesIdStr = boost::lexical_cast<std::string>(speciesId);
   std::string result = boost::replace_first_copy(outputName,"#",speciesIdStr);

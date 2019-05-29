@@ -9,8 +9,6 @@
 #ifndef PARTICLESTREAM_H_
 #define PARTICLESTREAM_H_
 
-#include "cfddatatypes.hpp"
-#include "cfdfile.hpp"
 #include "sdfdatatypes.hpp"
 #include "sdffile.hpp"
 #include <fstream>
@@ -34,39 +32,6 @@ class ParticleStream
     virtual int getRank() = 0;
 };
 typedef boost::shared_ptr<ParticleStream> pParticleStream;
-
-class CfdParticleStream : public ParticleStream
-{
-  public:
-    CfdParticleStream(pCfdFile file_, int64_t chunkLength_)
-        : file(file_),
-          chunkLength(chunkLength_)
-    {}
-
-    void addMesh(std::string blockname);
-    void addSpecies(std::string blockname);
-    void addWeight(std::string blockname);
-    void addPx(std::string blockname);
-    void addPy(std::string blockname);
-    void addPz(std::string blockname);
-
-    bool eos();
-    void getNextChunks();
-    bool isRaw() { return false; }
-    int getRank() { return meshStream->getRank(); }
-  private:
-    pCfdMeshVariableStream getValidVarStream();
-
-    pCfdFile file;
-    int64_t chunkLength;
-
-    pCfdMeshStream meshStream;
-    pCfdMeshVariableStream speciesStream;
-    pCfdMeshVariableStream weightStream;
-    pCfdMeshVariableStream pxStream;
-    pCfdMeshVariableStream pyStream;
-    pCfdMeshVariableStream pzStream;
-};
 
 class SdfParticleStream : public ParticleStream
 {

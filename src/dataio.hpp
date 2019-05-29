@@ -9,9 +9,6 @@
 #ifndef DATAIO_H_
 #define DATAIO_H_
 
-#include "cfdfile.hpp"
-#include "cfddatatypes.hpp"
-
 #include "sdffile.hpp"
 #include "sdfdatatypes.hpp"
 
@@ -33,26 +30,6 @@ class MeshDataImpl
 };
 typedef boost::shared_ptr<MeshDataImpl> pMeshDataImpl;
 
-class CfdMeshDataImpl : public MeshDataImpl
-{
-  public:
-    CfdMeshDataImpl(std::string inputName_, std::string blockName_);
-    void readData();
-    int getRank();
-    int getCount();
-    pDataGrid1d get1dMesh(int i);
-    pDataGrid2d get2dMesh(int i);
-    pDataGrid3d get3dMesh(int i);
-    double getMin(int i);
-    double getMax(int i);
-  private:
-    pCfdFile cfdFile;
-    pCfdBlockData data;
-    CfdMeshVariable *mData;
-
-    std::string blockName;
-    std::string inputName;
-};
 
 class SdfMeshDataImpl : public MeshDataImpl
 {

@@ -16,93 +16,6 @@ namespace fs = boost::filesystem;
 namespace po = boost::program_options;
 
 //===========================================================
-//=================    CfdParticleStream    =================
-//===========================================================
-
-void CfdParticleStream::addMesh(std::string blockname)
-{
-  pCfdBlockHeader block = file->getBlockHeader(blockname);
-  meshStream = pCfdMeshStream(
-      new CfdMeshStream(file->getStream(), file->getHeader(), *block, chunkLength)
-  );
-  mesh = pDataGrid2d(new DataGrid2d());
-}
-
-void CfdParticleStream::addSpecies(std::string blockname)
-{
-  pCfdBlockHeader block = file->getBlockHeader(blockname);
-  speciesStream = pCfdMeshVariableStream(
-      new CfdMeshVariableStream(file->getStream(), file->getHeader(), *block, chunkLength)
-  );
-  species = pDataGrid1d(new DataGrid1d());
-}
-
-void CfdParticleStream::addWeight(std::string blockname)
-{
-  pCfdBlockHeader block = file->getBlockHeader(blockname);
-  weightStream = pCfdMeshVariableStream(
-      new CfdMeshVariableStream(file->getStream(), file->getHeader(), *block, chunkLength)
-  );
-  weight = pDataGrid1d(new DataGrid1d());
-}
-
-void CfdParticleStream::addPx(std::string blockname)
-{
-  pCfdBlockHeader block = file->getBlockHeader(blockname);
-  pxStream = pCfdMeshVariableStream(
-      new CfdMeshVariableStream(file->getStream(), file->getHeader(), *block, chunkLength)
-  );
-  px = pDataGrid1d(new DataGrid1d());
-}
-
-void CfdParticleStream::addPy(std::string blockname)
-{
-  pCfdBlockHeader block = file->getBlockHeader(blockname);
-  pyStream = pCfdMeshVariableStream(
-      new CfdMeshVariableStream(file->getStream(), file->getHeader(), *block, chunkLength)
-  );
-  py = pDataGrid1d(new DataGrid1d());
-}
-
-void CfdParticleStream::addPz(std::string blockname)
-{
-  pCfdBlockHeader block = file->getBlockHeader(blockname);
-  pzStream = pCfdMeshVariableStream(
-      new CfdMeshVariableStream(file->getStream(), file->getHeader(), *block, chunkLength)
-  );
-  pz = pDataGrid1d(new DataGrid1d());
-}
-
-bool CfdParticleStream::eos()
-{
-  if (meshStream) return meshStream->eos();
-  else return getValidVarStream()->eos();
-}
-
-pCfdMeshVariableStream CfdParticleStream::getValidVarStream()
-{
-  if (speciesStream) return speciesStream;
-  if (weightStream) return weightStream;
-  if (pxStream) return pxStream;
-  if (pyStream) return pyStream;
-  if (pzStream) return pzStream;
-
-  throw GenericException("No particle block specified in ParticleStream");
-}
-
-void CfdParticleStream::getNextChunks()
-{
-  if (eos()) return;
-  if (meshStream) meshStream->getMeshChunk(mesh);
-  if (speciesStream) speciesStream->getMeshChunk(species);
-  if (weightStream) weightStream->getMeshChunk(weight);
-  if (pxStream) pxStream->getMeshChunk(px);
-  if (pyStream) pyStream->getMeshChunk(py);
-  if (pzStream) pzStream->getMeshChunk(pz);
-}
-
-
-//===========================================================
 //=================    SdfParticleStream    =================
 //===========================================================
 
@@ -424,7 +337,6 @@ void ParticleStreamFactory::setProgramOptions(po::options_description &option_de
   option_desc.add_options()
       ("input,i", po::value<std::string>(&inputName),"name of the cfd file")
       ("chunk,c", po::value<int64_t>(&chunkLength),"chunk size used in buffered reading. Set this for optimising speed and memory usage.")
-      ("cfd,d", "read data from old CFD files instead of SDF files")
       ("raw,r", "read data from raw RGE files instead of SDF files");
 
   if (species)
@@ -459,23 +371,7 @@ pParticleStream ParticleStreamFactory::getParticleStream(po::variables_map &vm)
 
   pParticleStream pstream;
 
-  if (vm.count("cfd")>0)
-  {
-    std::cerr << "Making CFD stream!\n";
-    pCfdFile file(new CfdFile(inputName));
-    CfdParticleStream *cfdStream = new CfdParticleStream(file, chunkLength);
-    if (species) cfdStream->addSpecies(speciesName);
-    if (momentum)
-    {
-      cfdStream->addPx(pxName);
-      cfdStream->addPy(pyName);
-      cfdStream->addPz(pzName);
-    }
-    if (mesh) cfdStream->addMesh(meshName);
-    if (weight) cfdStream->addWeight(weightName);
-    pstream = pParticleStream(cfdStream);
-  }
-  else if (vm.count("raw")<1)
+  if (vm.count("raw")<1)
   {
     std::cerr << "Making SDF stream!\n";
     pSdfFile file(new SdfFile(inputName));

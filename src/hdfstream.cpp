@@ -1,5 +1,6 @@
 #include "hdfstream.hpp"
-#include "cfdio.hpp"
+
+#include "binaryio.hpp"
 
 HDFstream::HDFstream()
   : file_id(-1),

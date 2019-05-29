@@ -6,12 +6,11 @@
  */
 
 #include "commands.hpp"
-#include "cfdio.hpp"
-
 #include <boost/program_options.hpp>
 #include <boost/format.hpp>
 
 #include <iostream>
+#include "binaryio.hpp"
 
 CommandMap msdfCommands;
 

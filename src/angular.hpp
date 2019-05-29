@@ -14,7 +14,7 @@
 #include "msdf.hpp"
 #include "particlestream.hpp"
 
-class McfdCommand_angular: public MsdfCommand
+class MsdfCommand_angular: public MsdfCommand
 {
   private:
     typedef DataGrid1d::const_storage_iterator GridIt1;
@@ -48,7 +48,7 @@ class McfdCommand_angular: public MsdfCommand
     double getValue(int axis, double px, double py, double pz, double x, double y);
 
   public:
-    McfdCommand_angular();
+    MsdfCommand_angular();
     void execute(int argc, char **argv);
     void print_help();
 };

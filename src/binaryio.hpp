@@ -18,11 +18,6 @@
 
 typedef boost::shared_ptr<std::istream> pIstream;
 
-typedef enum {scribble, additional, mesh, mesh_variable, snapshot,
-    stitched_vector, stitched_magnitude, constant, arb_db, other_block} BlockType;
-
-typedef enum { cartesian_mesh, particle_mesh, other_mesh } MeshType;
-
 class BinaryIo
 {
   protected:
@@ -43,95 +38,6 @@ class BinaryIo
       boost::trim(str);
     }
 };
-
-class CfdIo : public BinaryIo
-{
-  protected:
-
-    BlockType intToBlockType(int type) const
-    {
-      switch (type)
-      {
-        case -1: return scribble;
-        case 0: return additional;
-        case 1: return mesh;
-        case 2: return mesh_variable;
-        case 3: return snapshot;
-        case 4: return stitched_vector;
-        case 5: return stitched_magnitude;
-        case 6: return constant;
-        case 7: return arb_db;
-        default: return other_block;
-      }
-    }
-
-    MeshType intToMeshType(int type) const
-    {
-      switch (type)
-      {
-        case 0: return cartesian_mesh;
-        case 1: return particle_mesh;
-        default: return other_mesh;
-      }
-    }
-
-     std::string BlockTypeToString(BlockType type) const
-     {
-       switch (type)
-       {
-         case scribble:
-           return "scribble";
-         case additional:
-           return "additional";
-         case mesh:
-           return "mesh";
-         case mesh_variable:
-           return "mesh_variable";
-         case snapshot:
-           return "snapshot";
-         case stitched_vector:
-           return "stitched_vector";
-         case stitched_magnitude:
-           return "stitched_magnitude";
-         case constant:
-           return "constant";
-         case arb_db:
-           return "arb_db";
-         case other_block:
-         default:
-           return "other";
-       }
-     }
-
-     std::string MeshTypeToString(MeshType type) const
-      {
-        switch (type)
-        {
-          case cartesian_mesh:
-            return "cartesian_mesh";
-          case particle_mesh:
-            return "particle_mesh";
-          case other_mesh:
-          default:
-            return "other";
-        }
-      }
-};
-
-class CfdBlockData : public CfdIo
-{
-  public:
-    virtual BlockType getBlockType() = 0;
-};
-typedef boost::shared_ptr<CfdBlockData> pCfdBlockData;
-
-
-class CfdBlockDataStream : public CfdIo
-{
-  public:
-    virtual BlockType getBlockType() = 0;
-};
-typedef boost::shared_ptr<CfdBlockDataStream> pCfdBlockDataStream;
 
 class BlockNotFoundException
 {

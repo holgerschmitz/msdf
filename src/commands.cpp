@@ -86,7 +86,7 @@ pMsdfCommand McfdCommandInfo_screen::makeCommand()
 
 pMsdfCommand McfdCommandInfo_angular::makeCommand()
 {
-  return pMsdfCommand(new McfdCommand_angular());
+  return pMsdfCommand(new MsdfCommand_angular());
 }
 
 pMsdfCommand McfdCommandInfo_distfunc::makeCommand()

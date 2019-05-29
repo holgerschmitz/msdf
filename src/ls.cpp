@@ -6,7 +6,6 @@
  */
 
 #include "ls.hpp"
-#include "cfdfile.hpp"
 #include "sdffile.hpp"
 #include <boost/format.hpp>
 #include <fstream>
@@ -20,8 +19,7 @@ McfdCommand_ls::McfdCommand_ls()
   : option_desc("Options for the 'ls' command")
 {
   option_desc.add_options()
-      ("file,f", po::value<std::string>(&fileName), "name of the cfd file")
-      ("cfd", "read data from old CFD files instead of SDF files");
+      ("file,f", po::value<std::string>(&fileName), "name of the cfd file");
 
   option_pos.add("file", 1);
 }
@@ -41,66 +39,32 @@ void McfdCommand_ls::execute(int argc, char **argv)
 
   pIstream iStream( new std::fstream(fileName.c_str()) );
 
-  if (vm.count("cfd")>0)
+  SdfFile file(iStream);
+
+  pSdfBlockHeaderList blocks = file.getBlockHeaderList();
+  SdfBlockHeaderList::iterator it;
+
+  int blockCount = 1;
+  unsigned int maxNameLength = 0;
+  for (it = blocks->begin(); it != blocks->end(); ++it)
   {
-    CfdFile file(iStream);
-
-    pCfdBlockHeaderList blocks = file.getBlockHeaderList();
-    CfdBlockHeaderList::iterator it;
-
-    int blockCount = 1;
-    unsigned int maxNameLength = 0;
-    for (it = blocks->begin(); it != blocks->end(); ++it)
-    {
-      pCfdBlockHeader bl = *it;
-      if  (bl->getName().length()>maxNameLength) maxNameLength=bl->getName().length();
-    }
-
-    std::cout  << std::setiosflags(std::ios::left) << "  #    "
-        << std::setw(maxNameLength+1) << std::string("Name")
-        << "Offset       Type\n";
-
-
-    for (it = blocks->begin(); it != blocks->end(); ++it)
-    {
-      pCfdBlockHeader bl = *it;
-      std::cout << std::setiosflags(std::ios::left) << "  "
-        << std::setw(5) << blockCount++
-        << std::setw(maxNameLength+2) << bl->getName()
-        << std::setw(15) << bl->getBlockOffset()
-        << bl->getBlockTypeStr() << std::endl;
-    }
+    pSdfBlockHeader bl = *it;
+    if  (bl->getName().length()>maxNameLength) maxNameLength=bl->getName().length();
   }
-  else
+
+  std::cout  << std::setiosflags(std::ios::left) << "  #    "
+      << std::setw(maxNameLength+1) << std::string("Name")
+      << "Offset       Type\n";
+
+
+  for (it = blocks->begin(); it != blocks->end(); ++it)
   {
-
-    SdfFile file(iStream);
-
-    pSdfBlockHeaderList blocks = file.getBlockHeaderList();
-    SdfBlockHeaderList::iterator it;
-
-    int blockCount = 1;
-    unsigned int maxNameLength = 0;
-    for (it = blocks->begin(); it != blocks->end(); ++it)
-    {
-      pSdfBlockHeader bl = *it;
-      if  (bl->getName().length()>maxNameLength) maxNameLength=bl->getName().length();
-    }
-
-    std::cout  << std::setiosflags(std::ios::left) << "  #    "
-        << std::setw(maxNameLength+1) << std::string("Name")
-        << "Offset       Type\n";
-
-
-    for (it = blocks->begin(); it != blocks->end(); ++it)
-    {
-      pSdfBlockHeader bl = *it;
-      std::cout << std::setiosflags(std::ios::left) << "  "
-        << std::setw(5) << blockCount++
-        << std::setw(maxNameLength+2) << bl->getName()
-        << std::setw(15) << bl->getBlockOffsetHeader()
-        << bl->getBlockTypeStr() << std::endl;
-    }
+    pSdfBlockHeader bl = *it;
+    std::cout << std::setiosflags(std::ios::left) << "  "
+      << std::setw(5) << blockCount++
+      << std::setw(maxNameLength+2) << bl->getName()
+      << std::setw(15) << bl->getBlockOffsetHeader()
+      << bl->getBlockTypeStr() << std::endl;
   }
 }
 
