@@ -9,9 +9,9 @@
 #ifndef MSDF_SDFFILE_H_
 #define MSDF_SDFFILE_H_
 
-#include "common/binaryio.hpp"
+#include "binaryio.hpp"
 #include "sdfheader.hpp"
-#include "sdfblock.hpp"
+#include "../sdfblock.hpp"
 
 namespace msdf {
 

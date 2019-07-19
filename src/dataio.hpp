@@ -9,7 +9,7 @@
 #ifndef DATAIO_H_
 #define DATAIO_H_
 
-#include "sdffile.hpp"
+#include "common/sdffile.hpp"
 #include "sdfdatatypes.hpp"
 
 #include <boost/program_options.hpp>

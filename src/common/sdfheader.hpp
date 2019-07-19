@@ -9,7 +9,7 @@
 #ifndef SDFHEADER_H_
 #define SDFHEADER_H_
 
-#include "common/sdfio.hpp"
+#include "sdfio.hpp"
 
 namespace msdf {
 

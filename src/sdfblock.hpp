@@ -10,7 +10,7 @@
 #define SDFBLOCK_H_
 
 #include "common/sdfio.hpp"
-#include "sdfheader.hpp"
+#include "common/sdfheader.hpp"
 #include <string>
 #include <list>
 
