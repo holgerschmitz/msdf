@@ -11,8 +11,10 @@
 
 #include "msdf.hpp"
 #include "common/sdfio.hpp"
-#include "sdfheader.hpp"
+#include "common/sdfheader.hpp"
 #include "sdfblock.hpp"
+
+using namespace msdf;
 
 class SdfMeshVariable : public SdfBlockData
 {

@@ -11,6 +11,8 @@
 #include <boost/program_options.hpp>
 #include "commands.hpp"
 
+using namespace msdf;
+
 class McfdCommand_ls : public MsdfCommand
 {
   private:

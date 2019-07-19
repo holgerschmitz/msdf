@@ -15,16 +15,45 @@ namespace msdf {
 
   class SdfFile;
 
+  /**
+   * The SDF file header information
+   */
   class SdfFileHeader
   {
     public:
+      /**
+       * Create the file header from an input stream
+       */
       SdfFileHeader(pIstream sdfStream);
 
+      /**
+       * Get the position of the first block
+       */
       int32_t getFirstBlockLocation() {return first_block_location; }
+
+      /**
+       * Get the length of the block header
+       */
       int32_t getLengthBlockHeader() {return block_header_length; }
+
+      /**
+       * Get the major SDF version of the file
+       */
       int32_t getVersionMajor() {return sdf_version; }
+
+      /**
+       * Get the minor SDF version of the file
+       */
       int32_t getVersionMinor() {return sdf_revision; }
+
+      /**
+       * Get the length of a string
+       */
       int32_t getStringLength() {return string_length; }
+
+      /**
+       * Get the number of blocks in the file
+       */
       int32_t getNumBlocks() {return num_blocks; }
 
     private:
@@ -54,9 +83,15 @@ namespace msdf {
       //int32_t string_length;
       //int32_t num_blocks;
 
+      /**
+       * Read the header information from the file
+       */
       void readHeader(pIstream cfdStream);
   };
 
+  /**
+   * A shared pointer to SdfFileHeader
+   */
   typedef boost::shared_ptr<SdfFileHeader> pSdfFileHeader;
 
 } // namespace msdf

@@ -45,7 +45,7 @@ typedef enum {sdf_null_geom, sdf_cartesian, sdf_cylindrical, sdf_spherical} SDFG
  * @param type  the integer code from the SDF file
  * @returns     the block type
  */
-SdfBlockType intToBlockType(int type) const
+SdfBlockType intToBlockType(int type)
 {
   switch (type)
   {
@@ -90,7 +90,7 @@ SdfBlockType intToBlockType(int type) const
  * @param type  the integer code from the SDF file
  * @returns     the block type
  */
-SdfDataType intToDataType(int type) const
+SdfDataType intToDataType(int type)
 {
   switch (type)
   {
@@ -113,7 +113,7 @@ SdfDataType intToDataType(int type) const
  * @param type  the block type
  * @returns     the human readable name of the block type
  */
-std::string BlockTypeToString(SdfBlockType type) const
+std::string BlockTypeToString(SdfBlockType type)
 {
   switch (type)
   {
@@ -192,7 +192,7 @@ std::string BlockTypeToString(SdfBlockType type) const
  * @param type  the data type
  * @returns     the human readable name of the data type
  */
-std::string DataTypeToString(SdfDataType type) const
+std::string DataTypeToString(SdfDataType type)
 {
   switch (type)
   {

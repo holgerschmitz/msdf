@@ -10,10 +10,12 @@
 #define PARTICLESTREAM_H_
 
 #include "sdfdatatypes.hpp"
-#include "sdffile.hpp"
+#include "common/sdffile.hpp"
 #include <fstream>
 #include <map>
 #include <boost/program_options.hpp>
+
+using namespace msdf;
 
 class ParticleStream
 {
@@ -65,7 +67,7 @@ class SdfParticleStream : public ParticleStream
     int getRank() { return meshStream->getRank(); }
 };
 
-class RawParticleStream : public ParticleStream, public BinaryIo
+class RawParticleStream : public ParticleStream
 {
   public:
     RawParticleStream(std::string file_, int64_t dataLength_);

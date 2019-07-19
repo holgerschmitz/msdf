@@ -6,99 +6,103 @@
  *       Email: h.schmitz@imperial.ac.uk
  */
 
-#ifndef SDFBLOCK_H_
-#define SDFBLOCK_H_
+#ifndef MSDF_SDFBLOCK_H_
+#define MSDF_SDFBLOCK_H_
 
 #include "common/sdfio.hpp"
 #include "common/sdfheader.hpp"
 #include <string>
 #include <list>
 
-class SdfBlockHeader : public SdfIo
-{
-  private:
-      pSdfFileHeader fileHeader;
+namespace msdf {
 
-      std::string name;
-      std::string id;
-      int64_t next_block_location;
-      int64_t data_location;
-      int64_t data_length;
-      SdfBlockType blockType;
-      SdfDataType data_type;
-      int32_t ndims;
+  class SdfBlockHeader
+  {
+    private:
+        pSdfFileHeader fileHeader;
 
-      int64_t blockOffsetHeader;
-  public:
-    SdfBlockHeader(SdfFile &file); //Header fileHeader_, pIstream cfdStream);
-    SdfBlockHeader(const SdfBlockHeader &header);
-    void skipBlock(pIstream cfdStream);
-    pSdfBlockData getData(SdfFile &file);
-    pSdfBlockDataStream getDataStream(SdfFile &file);
+        std::string name;
+        std::string id;
+        int64_t next_block_location;
+        int64_t data_location;
+        int64_t data_length;
+        SdfBlockType blockType;
+        SdfDataType data_type;
+        int32_t ndims;
 
-    pSdfFileHeader getFileHeader() const
-    {
-        return fileHeader;
-    }
+        int64_t blockOffsetHeader;
+    public:
+      SdfBlockHeader(SdfFile &file); //Header fileHeader_, pIstream cfdStream);
+      SdfBlockHeader(const SdfBlockHeader &header);
+      void skipBlock(pIstream cfdStream);
+      pSdfBlockData getData(SdfFile &file);
+      pSdfBlockDataStream getDataStream(SdfFile &file);
 
-    int64_t getDataLocation() const
-    {
-        return data_location;
-    }
+      pSdfFileHeader getFileHeader() const
+      {
+          return fileHeader;
+      }
 
-    int64_t getBlockOffsetHeader() const
-    {
-        return blockOffsetHeader;
-    }
+      int64_t getDataLocation() const
+      {
+          return data_location;
+      }
 
-    int64_t getMetaDataOffset() const
-    {
-        return blockOffsetHeader + fileHeader->getLengthBlockHeader();
-    }
+      int64_t getBlockOffsetHeader() const
+      {
+          return blockOffsetHeader;
+      }
 
-    SdfBlockType getBlockType() const
-    {
-        return blockType;
-    }
+      int64_t getMetaDataOffset() const
+      {
+          return blockOffsetHeader + fileHeader->getLengthBlockHeader();
+      }
 
-    std::string getBlockTypeStr() const
-    {
-        return BlockTypeToString(blockType);
-    }
+      SdfBlockType getBlockType() const
+      {
+          return blockType;
+      }
 
-    SdfDataType getDataType() const
-    {
-        return data_type;
-    }
+      std::string getBlockTypeStr() const
+      {
+          return BlockTypeToString(blockType);
+      }
 
-    std::string getDataTypeStr() const
-    {
-        return DataTypeToString(data_type);
-    }
+      SdfDataType getDataType() const
+      {
+          return data_type;
+      }
 
-    int32_t getNDims() const
-    {
-        return ndims;
-    }
+      std::string getDataTypeStr() const
+      {
+          return DataTypeToString(data_type);
+      }
 
-    std::string getName() const
-    {
-        return id;
-    }
+      int32_t getNDims() const
+      {
+          return ndims;
+      }
 
-    std::string getScreenName() const
-    {
-        return name;
-    }
+      std::string getName() const
+      {
+          return id;
+      }
 
-  private:
+      std::string getScreenName() const
+      {
+          return name;
+      }
 
-    void readHeader(pIstream cfdStream);
-};
+    private:
 
-typedef boost::shared_ptr<SdfBlockHeader> pSdfBlockHeader;
+      void readHeader(pIstream cfdStream);
+  };
 
-typedef std::list<pSdfBlockHeader> SdfBlockHeaderList;
-typedef boost::shared_ptr<SdfBlockHeaderList> pSdfBlockHeaderList;
+  typedef boost::shared_ptr<SdfBlockHeader> pSdfBlockHeader;
+
+  typedef std::list<pSdfBlockHeader> SdfBlockHeaderList;
+  typedef boost::shared_ptr<SdfBlockHeaderList> pSdfBlockHeaderList;
+
+} // namepsace msdf
 
 #endif /* SDFBLOCK_H_ */
