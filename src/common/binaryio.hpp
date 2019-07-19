@@ -6,8 +6,8 @@
  *       Email: holger@notjustphysics.com
  */
 
-#ifndef BINARYIO_H_
-#define BINARYIO_H_
+#ifndef MSDF_BINARYIO_H_
+#define MSDF_BINARYIO_H_
 
 #include <boost/cstdint.hpp>
 #include <boost/shared_ptr.hpp>
@@ -19,9 +19,10 @@
 
 namespace msdf {
 
+  typedef boost::shared_ptr<std::istream> pIstream;
+
   /// @cond HIDDEN_SYMBOLS
   namespace detail {
-    typedef boost::shared_ptr<std::istream> pIstream;
 
     /**
      * Read a typed value from a binary stream
@@ -272,4 +273,4 @@ namespace msdf {
 
 } // namespace msdf
 
-#endif /* BINARYIO_H_ */
+#endif /* MSDF_BINARYIO_H_ */

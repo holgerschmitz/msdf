@@ -6,6 +6,7 @@
  */
 
 #include "commands.hpp"
+
 #include "ls.hpp"
 #include "tohdf.hpp"
 #include "pcount.hpp"
@@ -19,9 +20,11 @@
 #include <iostream>
 #include <iomanip>
 
-void store_command_in_map(CommandMap &map, McfdCommandFactory *info)
+using namespace msdf;
+
+void store_command_in_map(CommandMap &map, MsfdCommandFactory *info)
 {
-  map[info->name()] = pMcfdCommandFactory(info);
+  map[info->name()] = pMsfdCommandFactory(info);
 }
 
 void register_commands(CommandMap &map)
@@ -44,7 +47,7 @@ void print_help(CommandMap &map)
 
   for (CommandMap::iterator it = map.begin(); it != map.end(); ++it)
   {
-    pMcfdCommandFactory info(it->second);
+    pMsfdCommandFactory info(it->second);
     std::cout << "      "<< std::setiosflags(std::ios::left) << std::setw(10)
         << info->name() << "  " << info->description() << std::endl;
   }

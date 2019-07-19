@@ -9,12 +9,10 @@
 #ifndef SDFBLOCK_H_
 #define SDFBLOCK_H_
 
-#include "sdfio.hpp"
+#include "common/sdfio.hpp"
 #include "sdfheader.hpp"
 #include <string>
 #include <list>
-
-
 
 class SdfBlockHeader : public SdfIo
 {

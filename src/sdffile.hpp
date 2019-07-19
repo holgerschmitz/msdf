@@ -6,43 +6,96 @@
  *       Email: h.schmitz@imperial.ac.uk
  */
 
-#ifndef SDFFILE_H_
-#define SDFFILE_H_
+#ifndef MSDF_SDFFILE_H_
+#define MSDF_SDFFILE_H_
 
+#include "common/binaryio.hpp"
 #include "sdfheader.hpp"
 #include "sdfblock.hpp"
 
-class SdfFile {
-  private:
-    void readBlockHeaderList();
-    void rewind();
+namespace msdf {
 
-    pIstream sdfStream;
-    pSdfFileHeader header;
-    pSdfBlockHeaderList blockHeaderList;
-    int blockPointer;
+  /**
+   * @brief Information about an SDF file
+   */
+  class SdfFile {
+    private:
+      /**
+       * Read the block headers
+       */
+      void readBlockHeaderList();
 
-  public:
-    SdfFile(pIstream cfdStream_);
-    SdfFile(std::string &fileName);
+      /**
+       * Reset the file pointer to the first block header
+       */
+      void rewind();
 
-    pSdfFileHeader getHeader() const
-    {
-        return header;
-    }
+      /**
+       * The input stream from which the SDF file is read
+       */
+      pIstream sdfStream;
 
-    pSdfBlockHeaderList getBlockHeaderList()
-    {
-        return blockHeaderList;
-    }
+      /**
+       * The file header information
+       */
+      pSdfFileHeader header;
 
-    pIstream getStream() const { return sdfStream; }
+      /**
+       * The complete lost of blocks in the file
+       */
+      pSdfBlockHeaderList blockHeaderList;
 
-    pSdfBlockHeader getBlockHeader(std::string name);
+      /**
+       * The current block index
+       */
+      int blockPointer;
 
+    public:
+      /**
+       * Construct with an input stream
+       *
+       * @param sdfStream the stream to read from
+       */
+      SdfFile(pIstream sdfStream);
 
-};
+      /**
+       * Construct from file
+       *
+       * Creates a `std::fstream` from the file name
+       *
+       * @param fileName  the file name
+       */
+      SdfFile(std::string &fileName);
 
-typedef boost::shared_ptr<SdfFile> pSdfFile;
+      /**
+       * Get the file header
+       */
+      pSdfFileHeader getHeader() const
+      {
+          return header;
+      }
+
+      /**
+       * Get the list of block headers
+       */
+      pSdfBlockHeaderList getBlockHeaderList()
+      {
+          return blockHeaderList;
+      }
+
+//      pIstream getStream() const { return sdfStream; }
+
+      /**
+       * Get the block header with a specific name
+       */
+      pSdfBlockHeader getBlockHeader(std::string name);
+  };
+
+  /**
+   * A shared pointer to an SdfFile
+   */
+  typedef boost::shared_ptr<SdfFile> pSdfFile;
+
+} // namespace msdf
 
 #endif /* SDFFILE_H_ */

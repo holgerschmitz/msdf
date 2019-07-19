@@ -9,52 +9,56 @@
 #ifndef SDFHEADER_H_
 #define SDFHEADER_H_
 
-#include "sdfio.hpp"
+#include "common/sdfio.hpp"
 
-class SdfFile;
+namespace msdf {
 
-class SdfFileHeader : public SdfIo
-{
-  public:
-    SdfFileHeader(pIstream sdfStream);
+  class SdfFile;
 
-    int32_t getFirstBlockLocation() {return first_block_location; }
-    int32_t getLengthBlockHeader() {return block_header_length; }
-    int32_t getVersionMajor() {return sdf_version; }
-    int32_t getVersionMinor() {return sdf_revision; }
-    int32_t getStringLength() {return string_length; }
-    int32_t getNumBlocks() {return num_blocks; }
+  class SdfFileHeader
+  {
+    public:
+      SdfFileHeader(pIstream sdfStream);
 
-  private:
-    int32_t endianness;
-    int32_t sdf_version;
-    int32_t sdf_revision;
-    std::string code_name;
-    int64_t first_block_location;
-    int64_t summary_location;
-    int32_t summary_size;
-    int32_t num_blocks;
-    int32_t block_header_length;
-    int32_t step;
-    double time;
-    int32_t jobid1;
-    int32_t jobid2;
-    int32_t string_length;
-    int32_t code_io_version;
-    char restart_flag;
-    char subdomain_file;
+      int32_t getFirstBlockLocation() {return first_block_location; }
+      int32_t getLengthBlockHeader() {return block_header_length; }
+      int32_t getVersionMajor() {return sdf_version; }
+      int32_t getVersionMinor() {return sdf_revision; }
+      int32_t getStringLength() {return string_length; }
+      int32_t getNumBlocks() {return num_blocks; }
 
-    //int32_t
-    //int32_t length_file_header;
-    //int32_t length_block_header;
-    //int32_t version_major;
-    //int32_t version_minor;
-    //int32_t string_length;
-    //int32_t num_blocks;
+    private:
+      int32_t endianness;
+      int32_t sdf_version;
+      int32_t sdf_revision;
+      std::string code_name;
+      int64_t first_block_location;
+      int64_t summary_location;
+      int32_t summary_size;
+      int32_t num_blocks;
+      int32_t block_header_length;
+      int32_t step;
+      double time;
+      int32_t jobid1;
+      int32_t jobid2;
+      int32_t string_length;
+      int32_t code_io_version;
+      char restart_flag;
+      char subdomain_file;
 
-    void readHeader(pIstream cfdStream);
-};
+      //int32_t
+      //int32_t length_file_header;
+      //int32_t length_block_header;
+      //int32_t version_major;
+      //int32_t version_minor;
+      //int32_t string_length;
+      //int32_t num_blocks;
 
-typedef boost::shared_ptr<SdfFileHeader> pSdfFileHeader;
+      void readHeader(pIstream cfdStream);
+  };
+
+  typedef boost::shared_ptr<SdfFileHeader> pSdfFileHeader;
+
+} // namespace msdf
 
 #endif /* SDFHEADER_H_ */

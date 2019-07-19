@@ -10,7 +10,7 @@
 #define SDFDATATYPES_H_
 
 #include "msdf.hpp"
-#include "sdfio.hpp"
+#include "common/sdfio.hpp"
 #include "sdfheader.hpp"
 #include "sdfblock.hpp"
 

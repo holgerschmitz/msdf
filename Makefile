@@ -5,15 +5,15 @@ OFLAGS  = -g -O0 -Wall
 #OFLAGS  = -O3 -Wall
 #OFLAGS  = -O3 -Wall -DNDEBUG
 
-INCLUDE = -I/usr/local/include -I/usr/include/hdf5/openmpi
+INCLUDE = -I/usr/local/include -I/usr/include/hdf5/mpich
 #CXX     = $(X_CXX)
 CXX     = mpic++
 
 CXXFLAGS = $(OFLAGS)
 
 SOURCES = \
-  src/angular.cpp \
   src/commands.cpp \
+  src/angular.cpp \
   src/dataio.cpp \
   src/distfunc.cpp \
   src/hdfstream.cpp \
