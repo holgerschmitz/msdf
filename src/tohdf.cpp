@@ -62,7 +62,7 @@ void McfdCommand_tohdf::execute(int argc, char **argv)
   if (writeMeta)
   {
     std::ofstream meta(metaName.c_str(), std::ofstream::app);
-    meta << outputName << " " << meshData.getBlockName() << " " << meshData.getMin() << " " << meshData.getMax() << "\n";
+    meta << outputName << " " << meshData.getBlockName() << " " << meshData.getMin(0) << " " << meshData.getMax(0) << "\n";
     meta.close();
   }
 
@@ -82,13 +82,13 @@ void McfdCommand_tohdf::writeMeshVariable()
   switch (meshData.getRank())
   {
     case 1:
-      output << *(meshData.get1dMesh());
+      output << *(meshData.get1dMesh(0));
       break;
     case 2:
-      output << *(meshData.get2dMesh());
+      output << *(meshData.get2dMesh(0));
       break;
     case 3:
-      output << *(meshData.get3dMesh());
+      output << *(meshData.get3dMesh(0));
       break;
   }
 
@@ -104,7 +104,7 @@ void McfdCommand_tohdf::writeMeshVariableText()
   {
     case 1:
     {
-      DataGrid1d &m = *(meshData.get1dMesh());
+      DataGrid1d &m = *(meshData.get1dMesh(0));
       GridIndex1d l = m.getLo(), h = m.getHi();
       for (int i=l[0]; i<=h[0]; ++i)
         output << i << " " << m(i) << std::endl;
@@ -112,7 +112,7 @@ void McfdCommand_tohdf::writeMeshVariableText()
     break;
     case 2:
     {
-      DataGrid2d &m = *(meshData.get2dMesh());
+      DataGrid2d &m = *(meshData.get2dMesh(0));
       GridIndex2d l = m.getLo(), h = m.getHi();
 
       for (int i=l[0]; i<=h[0]; ++i)
@@ -125,7 +125,7 @@ void McfdCommand_tohdf::writeMeshVariableText()
     break;
     case 3:
     {
-      DataGrid3d &m = *(meshData.get3dMesh());
+      DataGrid3d &m = *(meshData.get3dMesh(0));
       GridIndex3d l = m.getLo(), h = m.getHi();
 
       for (int i=l[0]; i<=h[0]; ++i)

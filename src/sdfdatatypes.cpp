@@ -8,8 +8,10 @@
 #include "sdfdatatypes.hpp"
 
 #include <schnek/typetools.hpp>
-#include <schnek/vector.hpp>
+#include <schnek/grid/array.hpp>
 #include <algorithm>
+
+#include <boost/make_shared.hpp>
 
 //==============================================================================
 //==========================  SdfMeshVariable  =================================
@@ -61,6 +63,7 @@ double SdfMeshVariable::getMin(int i)
       return *std::min_element(this->mesh2d[i]->begin(), this->mesh2d[i]->end());
       break;
     case 3:
+    default:
       return *std::min_element(this->mesh3d[i]->begin(), this->mesh3d[i]->end());
       break;
   }
@@ -77,6 +80,7 @@ double SdfMeshVariable::getMax(int i)
       return *std::max_element(this->mesh2d[i]->begin(), this->mesh2d[i]->end());
       break;
     case 3:
+    default:
       return *std::max_element(this->mesh3d[i]->begin(), this->mesh3d[i]->end());
       break;
   }
@@ -87,9 +91,9 @@ void SdfMeshVariable::readData(pIstream sdfStream, pSdfFileHeader header, SdfBlo
   sdfStream->seekg(block.getMetaDataOffset());
   rank = block.getNDims();
 
-  this->readValue(*sdfStream, mult);
-  this->readString(*sdfStream, units, 32);
-  this->readString(*sdfStream, meshId, 32);
+  msdf::detail::readValue(*sdfStream, mult);
+  msdf::detail::readString(*sdfStream, units, 32);
+  msdf::detail::readString(*sdfStream, meshId, 32);
 
   switch (block.getDataType())
   {
@@ -119,8 +123,9 @@ void SdfMeshVariable::readData(pIstream sdfStream, pSdfFileHeader header, SdfBlo
       default:
         break;
     }
-  }
-  else if (precision==sizeof(double)) {
+  } 
+  else if (precision==sizeof(double)) 
+  {
     std::cerr << "  reading double precision\n";
     switch (block.getBlockType())
     {
@@ -128,7 +133,7 @@ void SdfMeshVariable::readData(pIstream sdfStream, pSdfFileHeader header, SdfBlo
         readDataByPrecision(sdfStream, header, block, schnek::Type2Type<double>());
         break;
       case sdf_point_variable:
-        readParticleDataByPrecision(sdfStream, header, block, schnek::Type2Type<float>());
+        readParticleDataByPrecision(sdfStream, header, block, schnek::Type2Type<double>());
         break;
       case sdf_lagrangian_mesh:
         readLagrangianDataByPrecision(sdfStream, header, block, schnek::Type2Type<double>());
@@ -149,16 +154,16 @@ void SdfMeshVariable::readDataByPrecision(pIstream sdfStream, pSdfFileHeader hea
   switch (rank)
   {
     case 1:
-      mesh1d = pDataGrid1d(new DataGrid1d());
-      this->readMeshData(sdfStream, header, block, rt, *mesh1d);
+      mesh1d.push_back(boost::make_shared<DataGrid1d>());
+      this->readMeshData(sdfStream, header, block, rt, *mesh1d.back());
       break;
     case 2:
-      mesh2d = pDataGrid2d(new DataGrid2d());
-      this->readMeshData(sdfStream, header, block, rt, *mesh2d);
+      mesh2d.push_back(boost::make_shared<DataGrid2d>());
+      this->readMeshData(sdfStream, header, block, rt, *mesh2d.back());
       break;
     case 3:
-      mesh3d = pDataGrid3d(new DataGrid3d());
-      this->readMeshData(sdfStream, header, block, rt, *mesh3d);
+      mesh3d.push_back(boost::make_shared<DataGrid3d>());
+      this->readMeshData(sdfStream, header, block, rt, *mesh3d.back());
       break;
     default:
       throw GenericException("CFD file contains mesh data with rank other than 1,2 or 3!");
@@ -173,14 +178,14 @@ void SdfMeshVariable::readMeshData(pIstream sdfStream, pSdfFileHeader header, Sd
   int stringLength = header->getStringLength();
 
   typedef typename realtype::OriginalType Real;
-  typedef schnek::Vector<int32_t, GridType::Rank> Index;
+  typedef schnek::Array<int32_t, GridType::Rank> Index;
 
   const int rank = GridType::Rank;
   Index arrsize;
   int32_t stagger;
 
-  for (int i=0; i<rank; ++i) this->readValue(*sdfStream, arrsize[rank-1-i]);
-  this->readValue(*sdfStream, stagger);
+  for (int i=0; i<rank; ++i) msdf::detail::readValue(*sdfStream, arrsize[rank-1-i]);
+  msdf::detail::readValue(*sdfStream, stagger);
 
   sdfStream->seekg(block.getDataLocation());
 
@@ -220,15 +225,15 @@ void SdfMeshVariable::readParticleDataByPrecision(pIstream sdfStream, pSdfFileHe
   typedef typename realtype::OriginalType Real;
 
   int64_t npart;
-  this->readValue(*sdfStream, npart);
+  msdf::detail::readValue(*sdfStream, npart);
 
   sdfStream->seekg(block.getDataLocation());
 
-  mesh1d->resize(GridIndex1d(npart));
+  mesh1d.push_back(boost::make_shared<DataGrid1d>(GridIndex1d(npart)));
 
   Real *data;
   if (sizeof(Real)==sizeof(typename DataGrid1d::value_type))
-    data = (Real*)(mesh1d->getRawData());
+    data = (Real*)(mesh1d.back()->getRawData());
   else
     data = new Real[npart];
 
@@ -241,7 +246,7 @@ void SdfMeshVariable::readParticleDataByPrecision(pIstream sdfStream, pSdfFileHe
   // otherwise we now need to copy and delete the data pointer
   if (sizeof(Real)!=sizeof(typename DataGrid1d::value_type))
   {
-    typename DataGrid1d::value_type *raw = mesh1d->getRawData();
+    typename DataGrid1d::value_type *raw = mesh1d.back()->getRawData();
     for (int64_t i=0; i<npart; ++i) raw[i] = data[i]; // type cast
     delete[] data;
   }
@@ -255,16 +260,16 @@ void SdfMeshVariable::readLagrangianDataByPrecision(pIstream sdfStream, pSdfFile
   switch (rank)
   {
     case 1:
-      mesh1d = pDataGrid1d(new DataGrid1d());
-      this->readLagrangianMeshData(sdfStream, header, block, rt, *mesh1d);
+      mesh1d.push_back(boost::make_shared<DataGrid1d>());
+      this->readLagrangianMeshData(sdfStream, header, block, rt, *mesh1d.back());
       break;
     case 2:
-      mesh2d = pDataGrid2d(new DataGrid2d());
-      this->readLagrangianMeshData(sdfStream, header, block, rt, *mesh2d);
+      mesh2d.push_back(boost::make_shared<DataGrid2d>());
+      this->readLagrangianMeshData(sdfStream, header, block, rt, *mesh2d.back());
       break;
     case 3:
-      mesh3d = pDataGrid3d(new DataGrid3d());
-      this->readLagrangianMeshData(sdfStream, header, block, rt, *mesh3d);
+      mesh3d.push_back(boost::make_shared<DataGrid3d>());
+      this->readLagrangianMeshData(sdfStream, header, block, rt, *mesh3d.back());
       break;
     default:
       throw GenericException("CFD file contains mesh data with rank other than 1,2 or 3!");
@@ -278,14 +283,14 @@ void SdfMeshVariable::readLagrangianMeshData(pIstream sdfStream, pSdfFileHeader 
   int stringLength = header->getStringLength();
 
   typedef typename realtype::OriginalType Real;
-  typedef schnek::Vector<int32_t, GridType::Rank> Index;
+  typedef schnek::Array<int32_t, GridType::Rank> Index;
 
   const int rank = GridType::Rank;
   Index arrsize;
   int32_t stagger;
 
-  for (int i=0; i<rank; ++i) this->readValue(*sdfStream, arrsize[rank-1-i]);
-  this->readValue(*sdfStream, stagger);
+  for (int i=0; i<rank; ++i) msdf::detail::readValue(*sdfStream, arrsize[rank-1-i]);
+  msdf::detail::readValue(*sdfStream, stagger);
 
   sdfStream->seekg(block.getDataLocation());
 
@@ -336,9 +341,9 @@ void SdfMeshVariableStream::initStream()
   sdfStream->seekg(block.getMetaDataOffset());
   rank = block.getNDims();
 
-  this->readValue(*sdfStream, mult);
-  this->readString(*sdfStream, units, 32);
-  this->readString(*sdfStream, meshId, 32);
+  msdf::detail::readValue(*sdfStream, mult);
+  msdf::detail::readString(*sdfStream, units, 32);
+  msdf::detail::readString(*sdfStream, meshId, 32);
 
   switch (block.getDataType())
   {
@@ -368,11 +373,11 @@ void SdfMeshVariableStream::initStreamByPrecision(realtype)
   int stringLength = header->getStringLength();
 
   typedef typename realtype::OriginalType Real;
-  typedef schnek::Vector<Real, 2> Bounds;
+  typedef schnek::Array<Real, 2> Bounds;
 
   Bounds extents;
 
-  this->readValue(*sdfStream, dataLength);
+  msdf::detail::readValue(*sdfStream, dataLength);
   dataLength *= rank;
 
   activeOffset = block.getDataLocation();
@@ -465,12 +470,12 @@ void SdfMeshStream::initStream()
   minvals.resize(rank);
   maxvals.resize(rank);
 
-  for (int i=0; i<rank; ++i) this->readValue(*sdfStream, mults[i]);
-  for (int i=0; i<rank; ++i) this->readString(*sdfStream, labels[i], 32);
-  for (int i=0; i<rank; ++i) this->readString(*sdfStream, units[i], 32);
-  this->readValue(*sdfStream, geometry);
-  for (int i=0; i<rank; ++i) this->readValue(*sdfStream, minvals[i]);
-  for (int i=0; i<rank; ++i) this->readValue(*sdfStream, maxvals[i]);
+  for (int i=0; i<rank; ++i) msdf::detail::readValue(*sdfStream, mults[i]);
+  for (int i=0; i<rank; ++i) msdf::detail::readString(*sdfStream, labels[i], 32);
+  for (int i=0; i<rank; ++i) msdf::detail::readString(*sdfStream, units[i], 32);
+  msdf::detail::readValue(*sdfStream, geometry);
+  for (int i=0; i<rank; ++i) msdf::detail::readValue(*sdfStream, minvals[i]);
+  for (int i=0; i<rank; ++i) msdf::detail::readValue(*sdfStream, maxvals[i]);
 
   switch (block.getDataType())
   {
@@ -498,9 +503,9 @@ template<typename realtype>
 void SdfMeshStream::initStreamByPrecision(realtype)
 {
   typedef typename realtype::OriginalType Real;
-  typedef schnek::Vector<Real, 2> Bounds;
+  typedef schnek::Array<Real, 2> Bounds;
 
-  this->readValue(*sdfStream, dataLength);
+  msdf::detail::readValue(*sdfStream, dataLength);
 
   activeOffset = block.getDataLocation();
   activeCount = 0;

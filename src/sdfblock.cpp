@@ -7,7 +7,7 @@
  */
 
 #include "sdfblock.hpp"
-#include "sdffile.hpp"
+#include "common/sdffile.hpp"
 #include "sdfdatatypes.hpp"
 
 #include <iostream>
@@ -37,22 +37,22 @@ void SdfBlockHeader::readHeader(pIstream sdfStream)
 
   blockOffsetHeader = sdfStream->tellg();
 
-  this->readValue(*sdfStream, next_block_location);
-  this->readValue(*sdfStream, data_location);
-  this->readString(*sdfStream, id, 32);
-  this->readValue(*sdfStream, data_length);
+  msdf::detail::readValue(*sdfStream, next_block_location);
+  msdf::detail::readValue(*sdfStream, data_location);
+  msdf::detail::readString(*sdfStream, id, 32);
+  msdf::detail::readValue(*sdfStream, data_length);
 
   int32_t bType;
-  this->readValue(*sdfStream, bType);
+  msdf::detail::readValue(*sdfStream, bType);
   blockType = intToBlockType(bType);
 
-  this->readValue(*sdfStream, bType);
+  msdf::detail::readValue(*sdfStream, bType);
   data_type = intToDataType(bType);
 
-  this->readValue(*sdfStream, ndims);
+  msdf::detail::readValue(*sdfStream, ndims);
 
 
-  this->readString(*sdfStream, name, stringLength);
+  msdf::detail::readString(*sdfStream, name, stringLength);
 }
 
 void SdfBlockHeader::skipBlock(pIstream sdfStream)

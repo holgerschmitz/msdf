@@ -99,7 +99,7 @@ class HDFistream : public HDFstream {
     virtual int open(const char*);
        
     /// stream input operator for a schnek::Matrix 
-    template<typename TYPE, int RANK, template<int> class Checking>
+    template<typename TYPE, size_t RANK, template<size_t> class Checking>
     HDFistream& operator>>(schnek::Grid<TYPE, RANK, Checking>& grid);
 };
 
@@ -122,7 +122,7 @@ class HDFostream : public HDFstream {
     virtual int open(const char*);
     
     /// stream output operator for a matrix
-    template<typename TYPE, int RANK, template<int> class Checking>
+    template<typename TYPE, size_t RANK, template<size_t> class Checking>
     HDFostream& operator<< (const schnek::Grid<TYPE, RANK, Checking>& grid);
 };
 

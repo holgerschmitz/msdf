@@ -7,6 +7,7 @@
  */
 
 #include "particlestream.hpp"
+#include "common/binaryio.hpp"
 #include <ios>
 #include <sstream>
 #include <boost/filesystem.hpp>
@@ -199,15 +200,15 @@ void RawParticleStream::getNextChunks()
 
 void RawParticleStream::readHeader()
 {
-  readValue(stream,count_i);
-  readValue(stream,rank);
-  readValue(stream,n_species);
-  readValue(stream,chunk);
+  msdf::detail::readValue(stream,count_i);
+  msdf::detail::readValue(stream,rank);
+  msdf::detail::readValue(stream,n_species);
+  msdf::detail::readValue(stream,chunk);
 
-  readValue(stream,x_min);
-  readValue(stream,x_max);
-  readValue(stream,y_min);
-  readValue(stream,y_max);
+  msdf::detail::readValue(stream,x_min);
+  msdf::detail::readValue(stream,x_max);
+  msdf::detail::readValue(stream,y_min);
+  msdf::detail::readValue(stream,y_max);
 
   species_count = 0;
   chunk_size = 0;
@@ -219,9 +220,9 @@ void RawParticleStream::readSpeciesHeader()
 {
 //  std::cout << "readSpeciesHeader = " << species_count << "\n";
   ++species_count;
-  readValue(stream,npleft);
-  readValue(stream,spcharge);
-  readValue(stream,spmass);
+  msdf::detail::readValue(stream,npleft);
+  msdf::detail::readValue(stream,spcharge);
+  msdf::detail::readValue(stream,spmass);
 
 //  std::cout << "readSpeciesHeader = " << npleft<< " : " << spcharge << ":" << spmass << "\n";
 
@@ -230,7 +231,7 @@ void RawParticleStream::readSpeciesHeader()
 
 void RawParticleStream::readChunkHeader()
 {
-  readValue(stream,chunk_size);
+  msdf::detail::readValue(stream,chunk_size);
   chunk_remainder = chunk_size;
 //  std::cout << "readChunkHeader = " << chunk_size << "\n";
 }

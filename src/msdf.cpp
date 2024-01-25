@@ -10,7 +10,9 @@
 #include <boost/format.hpp>
 
 #include <iostream>
-#include "binaryio.hpp"
+#include "common/binaryio.hpp"
+
+using namespace msdf;
 
 CommandMap msdfCommands;
 

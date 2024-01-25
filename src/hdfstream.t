@@ -1,8 +1,8 @@
 #include <sstream>
 
-#include "binaryio.hpp"
+#include "common/binaryio.hpp"
 
-template<typename TYPE, int RANK, template<int> class Checking>
+template<typename TYPE, size_t RANK, template<size_t> class Checking>
 HDFistream& HDFistream::operator>>(schnek::Grid<TYPE, RANK, Checking>& grid)
 {
   if (!active) return *this;
@@ -41,7 +41,7 @@ HDFistream& HDFistream::operator>>(schnek::Grid<TYPE, RANK, Checking>& grid)
   return *this;
 }
 
-template<typename TYPE, int RANK, template<int> class Checking>
+template<typename TYPE, size_t RANK, template<size_t> class Checking>
 HDFostream& HDFostream::operator<< (const schnek::Grid<TYPE, RANK, Checking>& grid)
 {
   if (!active) return *this;

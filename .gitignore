@@ -28,7 +28,30 @@
 *.out
 *.app
 
-bin/
-.project
-.cproject
-.settings
+# eclipse project files
+/.cproject
+/.project
+/.settings
+/bin
+
+# vscode project files
+/.vscode
+
+# CMake files
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+DartConfiguration.tcl
+
+# Simulation output
+*.h5
+information.tex
+references.bib

@@ -83,7 +83,7 @@ namespace msdf {
           return blockHeaderList;
       }
 
-//      pIstream getStream() const { return sdfStream; }
+      pIstream getStream() const { return sdfStream; }
 
       /**
        * Get the block header with a specific name

@@ -6,7 +6,7 @@
  */
 
 #include "ls.hpp"
-#include "sdffile.hpp"
+#include "common/sdffile.hpp"
 #include <boost/format.hpp>
 #include <fstream>
 #include <iostream>
