@@ -14,6 +14,7 @@
 #include <fstream>
 #include <iostream>
 #include <iomanip>
+#include <vector>
 
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
@@ -77,19 +78,33 @@ void McfdCommand_tohdf::constructOutputFileName()
 void McfdCommand_tohdf::writeMeshVariable()
 {
   HDFostream output(outputName.c_str());
-  output.setBlockName(meshData.getBlockName());
 
-  switch (meshData.getRank())
+  if (meshData.isPointMesh())
   {
-    case 1:
-      output << *(meshData.get1dMesh(0));
-      break;
-    case 2:
-      output << *(meshData.get2dMesh(0));
-      break;
-    case 3:
-      output << *(meshData.get3dMesh(0));
-      break;
+    // point_mesh: write ndims datasets named x, y, z
+    static const char* coordNames[] = {"x", "y", "z"};
+    int ndims = meshData.getCount();
+    for (int d = 0; d < ndims; ++d)
+    {
+      output.setBlockName(coordNames[d]);
+      output << *(meshData.get1dMesh(d));
+    }
+  }
+  else
+  {
+    output.setBlockName(meshData.getBlockName());
+    switch (meshData.getRank())
+    {
+      case 1:
+        output << *(meshData.get1dMesh(0));
+        break;
+      case 2:
+        output << *(meshData.get2dMesh(0));
+        break;
+      case 3:
+        output << *(meshData.get3dMesh(0));
+        break;
+    }
   }
 
   output.close();
@@ -100,43 +115,64 @@ void McfdCommand_tohdf::writeMeshVariableText()
 {
   std::ofstream output(outputName.c_str());
 
-  switch (meshData.getRank())
+  if (meshData.isPointMesh())
   {
-    case 1:
-    {
-      DataGrid1d &m = *(meshData.get1dMesh(0));
-      GridIndex1d l = m.getLo(), h = m.getHi();
-      for (int i=l[0]; i<=h[0]; ++i)
-        output << i << " " << m(i) << std::endl;
-    }
-    break;
-    case 2:
-    {
-      DataGrid2d &m = *(meshData.get2dMesh(0));
-      GridIndex2d l = m.getLo(), h = m.getHi();
+    // point_mesh: ndims+1 columns (index, x, [y, [z]])
+    int ndims = meshData.getCount();
+    std::vector<pDataGrid1d> grids(ndims);
+    for (int d = 0; d < ndims; ++d)
+      grids[d] = meshData.get1dMesh(d);
 
-      for (int i=l[0]; i<=h[0]; ++i)
-      {
-        for (int j=l[1]; j<=h[1]; ++j)
-          output << i << " " << j << " " << m(i,j) << std::endl;
-        output << std::endl;
-      }
-    }
-    break;
-    case 3:
+    GridIndex1d lo = grids[0]->getLo();
+    GridIndex1d hi = grids[0]->getHi();
+    for (int i = lo[0]; i <= hi[0]; ++i)
     {
-      DataGrid3d &m = *(meshData.get3dMesh(0));
-      GridIndex3d l = m.getLo(), h = m.getHi();
-
-      for (int i=l[0]; i<=h[0]; ++i)
-      {
-        for (int j=l[1]; j<=h[1]; ++j)
-          for (int k=l[2]; k<=h[2]; ++k)
-          output << i << " " << j << " " << k << " " << m(i,j,k) << std::endl;
-        output << std::endl;
-      }
+      output << i;
+      for (int d = 0; d < ndims; ++d)
+        output << " " << (*(grids[d]))(i);
+      output << std::endl;
     }
-    break;
+  }
+  else
+  {
+    switch (meshData.getRank())
+    {
+      case 1:
+      {
+        DataGrid1d &m = *(meshData.get1dMesh(0));
+        GridIndex1d l = m.getLo(), h = m.getHi();
+        for (int i=l[0]; i<=h[0]; ++i)
+          output << i << " " << m(i) << std::endl;
+      }
+      break;
+      case 2:
+      {
+        DataGrid2d &m = *(meshData.get2dMesh(0));
+        GridIndex2d l = m.getLo(), h = m.getHi();
+
+        for (int i=l[0]; i<=h[0]; ++i)
+        {
+          for (int j=l[1]; j<=h[1]; ++j)
+            output << i << " " << j << " " << m(i,j) << std::endl;
+          output << std::endl;
+        }
+      }
+      break;
+      case 3:
+      {
+        DataGrid3d &m = *(meshData.get3dMesh(0));
+        GridIndex3d l = m.getLo(), h = m.getHi();
+
+        for (int i=l[0]; i<=h[0]; ++i)
+        {
+          for (int j=l[1]; j<=h[1]; ++j)
+            for (int k=l[2]; k<=h[2]; ++k)
+            output << i << " " << j << " " << k << " " << m(i,j,k) << std::endl;
+          output << std::endl;
+        }
+      }
+      break;
+    }
   }
 
   output.close();

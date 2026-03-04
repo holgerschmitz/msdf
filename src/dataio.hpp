@@ -27,6 +27,7 @@ class MeshDataImpl
     virtual pDataGrid3d get3dMesh(int i) = 0;
     virtual double getMin(int i) = 0;
     virtual double getMax(int i) = 0;
+    virtual bool isPointMesh() const { return false; }
 };
 typedef boost::shared_ptr<MeshDataImpl> pMeshDataImpl;
 
@@ -43,10 +44,12 @@ class SdfMeshDataImpl : public MeshDataImpl
     pDataGrid3d get3dMesh(int i);
     double getMin(int i);
     double getMax(int i);
+    bool isPointMesh() const;
   private:
     pSdfFile sdfFile;
     pSdfBlockData data;
     SdfMeshVariable *mData;
+    SdfPointMesh *pmData;
 
     std::string blockName;
     std::string inputName;
@@ -76,6 +79,7 @@ class MeshData
     pDataGrid3d get3dMesh(int i) { return impl->get3dMesh(i); }
     double getMin(int i) { return impl->getMin(i); }
     double getMax(int i) { return impl->getMax(i); }
+    bool isPointMesh() const { return impl->isPointMesh(); }
 };
 
 class MultiMeshData

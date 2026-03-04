@@ -20,19 +20,61 @@ void SdfMeshDataImpl::readData()
   sdfFile = pSdfFile(new SdfFile(inputName));
 
   data = sdfFile->getBlockHeader(blockName)->getData(*sdfFile);
-  if ((data->getBlockType() != sdf_plain_variable) && (data->getBlockType() != sdf_point_variable))
-    throw msdf::GenericException("Block contains a data type that in not compatible with this action!");
+  if ((data->getBlockType() != sdf_plain_variable)
+      && (data->getBlockType() != sdf_point_variable)
+      && (data->getBlockType() != sdf_point_mesh))
+    throw msdf::GenericException("Block contains a data type that is not compatible with this action!");
 
-  mData = &(dynamic_cast<SdfMeshVariable&>(*data));
+  if (data->getBlockType() == sdf_point_mesh)
+  {
+    mData = nullptr;
+    pmData = dynamic_cast<SdfPointMesh*>(&(*data));
+  }
+  else
+  {
+    pmData = nullptr;
+    mData = &(dynamic_cast<SdfMeshVariable&>(*data));
+  }
 }
 
-int SdfMeshDataImpl::getRank() { return mData->getRank(); }
-int SdfMeshDataImpl::getCount() { return mData->getCount(); }
-pDataGrid1d SdfMeshDataImpl::get1dMesh(int i) { return mData->get1dMesh(i); }
-pDataGrid2d SdfMeshDataImpl::get2dMesh(int i) { return mData->get2dMesh(i); }
-pDataGrid3d SdfMeshDataImpl::get3dMesh(int i) { return mData->get3dMesh(i); }
-double SdfMeshDataImpl::getMin(int i) { return mData->getMin(i); }
-double SdfMeshDataImpl::getMax(int i) { return mData->getMax(i); }
+int SdfMeshDataImpl::getRank() {
+  if (pmData) return 1;  // point_mesh data is always returned as 1D arrays
+  return mData->getRank();
+}
+
+int SdfMeshDataImpl::getCount() {
+  if (pmData) return pmData->getCount();
+  return mData->getCount();
+}
+
+pDataGrid1d SdfMeshDataImpl::get1dMesh(int i) {
+  if (pmData) return pmData->get1dMesh(i);
+  return mData->get1dMesh(i);
+}
+
+pDataGrid2d SdfMeshDataImpl::get2dMesh(int i) {
+  if (pmData) throw msdf::GenericException("point_mesh data is 1D only");
+  return mData->get2dMesh(i);
+}
+
+pDataGrid3d SdfMeshDataImpl::get3dMesh(int i) {
+  if (pmData) throw msdf::GenericException("point_mesh data is 1D only");
+  return mData->get3dMesh(i);
+}
+
+double SdfMeshDataImpl::getMin(int i) {
+  if (pmData) return pmData->getMin(i);
+  return mData->getMin(i);
+}
+
+double SdfMeshDataImpl::getMax(int i) {
+  if (pmData) return pmData->getMax(i);
+  return mData->getMax(i);
+}
+
+bool SdfMeshDataImpl::isPointMesh() const {
+  return pmData != nullptr;
+}
 
 
 //===========================================================

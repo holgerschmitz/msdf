@@ -72,6 +72,8 @@ pSdfBlockData SdfBlockHeader::getData(SdfFile &file)
     case sdf_plain_variable:
     case sdf_point_variable:
       return pSdfBlockData(new SdfMeshVariable(sdfStream, file.getHeader(), *this));
+    case sdf_point_mesh:
+      return pSdfBlockData(new SdfPointMesh(sdfStream, file.getHeader(), *this));
 //    case snapshot:
 //      return this->getSnapshot(cfdStream);
     default:

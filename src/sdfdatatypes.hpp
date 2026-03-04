@@ -152,5 +152,47 @@ class SdfMeshStream : public SdfBlockDataStream
 typedef boost::shared_ptr<SdfMeshStream> pSdfMeshStream;
 
 
+/**
+ * Reads a point_mesh block from an SDF file.
+ *
+ * A point_mesh stores the positions of np points in ndims dimensions.
+ * The data section contains ndims consecutive 1D arrays of length np.
+ */
+class SdfPointMesh : public SdfBlockData
+{
+  private:
+    SdfBlockHeader block;
+  public:
+    SdfPointMesh(pIstream sdfStream, pSdfFileHeader header, SdfBlockHeader &block_);
+    SdfBlockType getBlockType() { return block.getBlockType(); }
+    int getRank() { return rank; }
+    int getCount() { return rank; }  // number of coordinate arrays
+    int64_t getNumPoints() { return np; }
+    pDataGrid1d get1dMesh(int i);
+
+    double getMin(int i) { return minvals[i]; }
+    double getMax(int i) { return maxvals[i]; }
+  private:
+    int32_t rank;
+    int32_t precision;
+    int32_t geometry;
+    int64_t np;
+
+    std::vector<double> mults;
+    std::vector<std::string> labels;
+    std::vector<std::string> units;
+    std::vector<double> minvals;
+    std::vector<double> maxvals;
+
+    std::vector<pDataGrid1d> coords;  // one 1D grid per dimension
+
+    void readData(pIstream sdfStream, pSdfFileHeader header, SdfBlockHeader &block);
+
+    template<typename realtype>
+    void readDataByPrecision(pIstream sdfStream, pSdfFileHeader header, SdfBlockHeader &block, realtype);
+};
+
+typedef boost::shared_ptr<SdfPointMesh> pSdfPointMesh;
+
 
 #endif /* SDFDATATYPES_H_ */

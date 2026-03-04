@@ -580,3 +580,102 @@ void SdfMeshStream::readChunkByPrecision(int64_t chsize, pDataGrid2d chunk, real
 
   delete[] data;
 }
+
+
+//==============================================================================
+//===============================  SdfPointMesh  ===============================
+//==============================================================================
+
+SdfPointMesh::SdfPointMesh(pIstream sdfStream, pSdfFileHeader header, SdfBlockHeader &block_)
+  : block(block_)
+{
+  this->readData(sdfStream, header, block);
+}
+
+pDataGrid1d SdfPointMesh::get1dMesh(int i)
+{
+  if (i < 0 || i >= rank)
+    throw msdf::GenericException("Coordinate index out of range for point_mesh!");
+  return coords[i];
+}
+
+void SdfPointMesh::readData(pIstream sdfStream, pSdfFileHeader header, SdfBlockHeader &block)
+{
+  sdfStream->seekg(block.getMetaDataOffset());
+  rank = block.getNDims();
+
+  mults.resize(rank);
+  labels.resize(rank);
+  units.resize(rank);
+  minvals.resize(rank);
+  maxvals.resize(rank);
+
+  // Read per-dimension metadata (same layout as plain_mesh / point_mesh common header)
+  for (int i = 0; i < rank; ++i) msdf::detail::readValue(*sdfStream, mults[i]);
+  for (int i = 0; i < rank; ++i) msdf::detail::readString(*sdfStream, labels[i], 32);
+  for (int i = 0; i < rank; ++i) msdf::detail::readString(*sdfStream, units[i], 32);
+  msdf::detail::readValue(*sdfStream, geometry);
+  for (int i = 0; i < rank; ++i) msdf::detail::readValue(*sdfStream, minvals[i]);
+  for (int i = 0; i < rank; ++i) msdf::detail::readValue(*sdfStream, maxvals[i]);
+
+  // Point mesh specific: number of points (int 8)
+  msdf::detail::readValue(*sdfStream, np);
+
+  switch (block.getDataType())
+  {
+    case sdf_real4:
+      precision = 4;
+      break;
+    case sdf_real8:
+      precision = 8;
+      break;
+    default:
+      throw DataTypeUnsupportedException(block.getName(), block.getDataTypeStr());
+  }
+
+  if (precision == sizeof(float))
+  {
+    std::cerr << "  reading single precision point_mesh\n";
+    readDataByPrecision(sdfStream, header, block, schnek::Type2Type<float>());
+  }
+  else if (precision == sizeof(double))
+  {
+    std::cerr << "  reading double precision point_mesh\n";
+    readDataByPrecision(sdfStream, header, block, schnek::Type2Type<double>());
+  }
+  else
+  {
+    throw msdf::GenericException("SDF file contains unsupported precision data in point_mesh!");
+  }
+}
+
+template<typename realtype>
+void SdfPointMesh::readDataByPrecision(pIstream sdfStream, pSdfFileHeader header, SdfBlockHeader &block, realtype)
+{
+  typedef typename realtype::OriginalType Real;
+
+  sdfStream->seekg(block.getDataLocation());
+
+  coords.resize(rank);
+
+  for (int dim = 0; dim < rank; ++dim)
+  {
+    coords[dim] = boost::make_shared<DataGrid1d>(GridIndex1d(np));
+
+    Real *data;
+    if (sizeof(Real) == sizeof(typename DataGrid1d::value_type))
+      data = (Real*)(coords[dim]->getRawData());
+    else
+      data = new Real[np];
+
+    char *ch = (char*)data;
+    sdfStream->read(ch, np * sizeof(Real));
+
+    if (sizeof(Real) != sizeof(typename DataGrid1d::value_type))
+    {
+      typename DataGrid1d::value_type *raw = coords[dim]->getRawData();
+      for (int64_t i = 0; i < np; ++i) raw[i] = data[i];
+      delete[] data;
+    }
+  }
+}
