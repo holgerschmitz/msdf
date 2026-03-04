@@ -21,7 +21,7 @@ void SdfMeshDataImpl::readData()
 
   data = sdfFile->getBlockHeader(blockName)->getData(*sdfFile);
   if ((data->getBlockType() != sdf_plain_variable) && (data->getBlockType() != sdf_point_variable))
-    throw GenericException("Block contains a data type that in not compatible with this action!");
+    throw msdf::GenericException("Block contains a data type that in not compatible with this action!");
 
   mData = &(dynamic_cast<SdfMeshVariable&>(*data));
 }
@@ -34,6 +34,10 @@ pDataGrid3d SdfMeshDataImpl::get3dMesh(int i) { return mData->get3dMesh(i); }
 double SdfMeshDataImpl::getMin(int i) { return mData->getMin(i); }
 double SdfMeshDataImpl::getMax(int i) { return mData->getMax(i); }
 
+
+//===========================================================
+//======================    MeshData    =====================
+//===========================================================
 
 void MeshData::setProgramOptions(boost::program_options::options_description &option_desc,
     boost::program_options::positional_options_description &option_pos)
@@ -54,5 +58,68 @@ bool MeshData::isValid(po::variables_map &vm)
 void MeshData::readData(po::variables_map &vm)
 {
   impl = pMeshDataImpl(new SdfMeshDataImpl(inputName, blockName));
+  impl->readData();
+}
+
+//===========================================================
+//====================    MultiMeshData    ==================
+//===========================================================
+
+void MultiMeshData::setProgramOptions(boost::program_options::options_description &option_desc,
+    boost::program_options::positional_options_description &option_pos)
+{
+  option_desc.add_options()
+      ("block,b", po::value<std::string>(&blockNamePattern),
+        "A comma separated list of data block names to read from the SDF file. "
+        "Each block will be read into a separate dataset in the HDF5 file with "
+        "the same name as the block."
+      )
+      ("input,i", po::value<std::string>(&inputNamePattern),
+        "File name pattern of the SDF files. Supports Kleene star wildcards, e.g. 'data*.sdf')."
+      )
+      ("x,x", po::value<int>(&xSlice)->default_value(-1),
+        "Slice the input data in the x-direction at the given index."
+      )
+      ("y,y", po::value<int>(&ySlice)->default_value(-1),
+        "Slice the input data in the y-direction at the given index."
+      )
+      ("z,z", po::value<int>(&zSlice)->default_value(-1),
+        "Slice the input data in the z-direction at the given index."
+      )
+      ;
+
+  option_pos.add("block", 1);
+  option_pos.add("input", 2);
+}
+
+bool MultiMeshData::isValid(po::variables_map &vm)
+{
+  return (vm.count("input")>0) && (vm.count("block")>0);
+}
+
+void MultiMeshData::init()
+{
+  std::string blockName;
+  std::string inputName;
+  std::string::size_type pos = 0;
+  while (pos < blockNamePattern.size())
+  {
+    std::string::size_type nextPos = blockNamePattern.find(',', pos);
+    if (nextPos == std::string::npos)
+      nextPos = blockNamePattern.size();
+    blockName = blockNamePattern.substr(pos, nextPos-pos);
+    blockNames.push_back(blockName);
+    pos = nextPos+1;
+  }
+
+}
+
+void MultiMeshData::readData(
+    boost::program_options::variables_map &vm, 
+    std::string theInputName, 
+    std::string theBlockName
+) 
+{
+  impl = pMeshDataImpl(new SdfMeshDataImpl(theInputName, theBlockName));
   impl->readData();
 }

@@ -173,6 +173,34 @@ namespace msdf {
 
 
   //===========================================================
+  //=================    joinslices command    ================
+  //===========================================================
+
+  /**
+   * Command factory for the `joinslices` command
+   */
+  class McfdCommandInfo_joinslices : public MsdfCommandFactory
+  {
+    public:
+      std::string name() { return "joinslices"; }
+
+      std::string description()
+      {
+        return "Joins grids from multiple SDF files into a single HDF5 file. "
+          "The grids must have the same dimensions. The output file will consist "
+          "of a single dataset one dimension higher than the input datasets. Supports "
+          "slicing of the input datasets using the -x, -y, -z options.";
+      }
+
+      /**
+       * Create the `joinslices` command
+       *
+       * @return a new instance of McfdCommandInfo_joinslices
+       */
+      pMsdfCommand makeCommand();
+  };
+
+  //===========================================================
   //====================    pcount command    ==================
   //===========================================================
 

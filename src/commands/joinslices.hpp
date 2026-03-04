@@ -6,17 +6,17 @@
  *       Email: h.schmitz@imperial.ac.uk
  */
 
-#ifndef TOHDF_H_
-#define TOHDF_H_
+#ifndef JOINSLICES_H_
+#define JOINSLICES_H_
 
 
 #include <boost/program_options.hpp>
-#include "commands.hpp"
-#include "dataio.hpp"
+#include "../commands.hpp"
+#include "../dataio.hpp"
 
 class CfdMeshVariable;
 
-class McfdCommand_tohdf : public MsdfCommand
+class McfdCommand_joinslices : public MsdfCommand
 {
   private:
     boost::program_options::options_description option_desc;
@@ -29,13 +29,13 @@ class McfdCommand_tohdf : public MsdfCommand
 
     MeshData meshData;
 
-    void constructOutputFileName();
     void writeMeshVariable();
     void writeMeshVariableText();
+    void constructOutputFileName() { throw msdf::GenericException("Not implemented yet!"); }
   public:
-    McfdCommand_tohdf();
+    McfdCommand_joinslices();
     void execute(int argc, char **argv);
     void print_help();
 };
 
-#endif /* TOHDF_H_ */
+#endif /* JOINSLICES_H_ */

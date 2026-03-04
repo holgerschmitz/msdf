@@ -8,7 +8,8 @@
 #include "commands.hpp"
 
 #include "ls.hpp"
-#include "tohdf.hpp"
+#include "commands/joinslices.hpp"
+#include "commands/tohdf.hpp"
 #include "pcount.hpp"
 #include "penergy.hpp"
 #include "phaseplot.hpp"
@@ -65,6 +66,11 @@ namespace msdf {
   pMsdfCommand McfdCommandInfo_tohdf::makeCommand()
   {
     return pMsdfCommand(new McfdCommand_tohdf());
+  }
+
+  pMsdfCommand McfdCommandInfo_joinslices::makeCommand()
+  {
+    return pMsdfCommand(new McfdCommand_joinslices());
   }
 
   pMsdfCommand McfdCommandInfo_pcount::makeCommand()

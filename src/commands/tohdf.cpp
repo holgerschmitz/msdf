@@ -8,7 +8,7 @@
 
 
 #include "tohdf.hpp"
-#include "hdfstream.hpp"
+#include "../hdfstream.hpp"
 #include <boost/format.hpp>
 #include <boost/filesystem.hpp>
 #include <fstream>

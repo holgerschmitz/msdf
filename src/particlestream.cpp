@@ -87,7 +87,7 @@ pSdfMeshVariableStream SdfParticleStream::getValidVarStream()
   if (pyStream) return pyStream;
   if (pzStream) return pzStream;
 
-  throw GenericException("No particle block specified in ParticleStream");
+  throw msdf::GenericException("No particle block specified in ParticleStream");
 }
 
 void SdfParticleStream::getNextChunks()

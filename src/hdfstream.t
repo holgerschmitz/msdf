@@ -23,7 +23,7 @@ HDFistream& HDFistream::operator>>(schnek::Grid<TYPE, RANK, Checking>& grid)
 
   /* open the dataset collectively */
   hid_t dataset = H5Dopen(file_id, dset_name.c_str(), H5P_DEFAULT);
-  if (dataset == -1) throw GenericException("Problems opening HDF file!");
+  if (dataset == -1) throw msdf::GenericException("Problems opening HDF file!");
   
   /* read the data on single processor */
   hid_t ret = H5Dread(dataset,
@@ -32,11 +32,11 @@ HDFistream& HDFistream::operator>>(schnek::Grid<TYPE, RANK, Checking>& grid)
                       H5S_ALL,
                       H5P_DEFAULT,
                       data);
-  if (ret == -1) throw GenericException("Problems reading data from HDF file!");
+  if (ret == -1) throw msdf::GenericException("Problems reading data from HDF file!");
 
   /* close dataset collectively */
   ret=H5Dclose(dataset);
-  if (ret == -1) throw GenericException("Problems closing HDF dataset!");
+  if (ret == -1) throw msdf::GenericException("Problems closing HDF dataset!");
 
   return *this;
 }
@@ -86,11 +86,11 @@ HDFostream& HDFostream::operator<< (const schnek::Grid<TYPE, RANK, Checking>& gr
       H5S_ALL,
       H5P_DEFAULT,
       data);
-  if (ret == -1) throw GenericException("Problems writing data to HDF file!");
+  if (ret == -1) throw msdf::GenericException("Problems writing data to HDF file!");
 
   /* close dataset collectively */					    
   ret=H5Dclose(dataset);
-  if (ret == -1) throw GenericException("Problems closing HDF dataset!");
+  if (ret == -1) throw msdf::GenericException("Problems closing HDF dataset!");
     
   /* release all IDs created */
   H5Sclose(sid);

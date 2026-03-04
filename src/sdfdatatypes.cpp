@@ -26,19 +26,19 @@ SdfMeshVariable::SdfMeshVariable(pIstream sdfStream, pSdfFileHeader header, SdfB
 
 pDataGrid1d SdfMeshVariable::get1dMesh(int i)
 {
-  if (rank!=1) throw GenericException("Wrong mesh dimension!");
+  if (rank!=1) throw msdf::GenericException("Wrong mesh dimension!");
   return mesh1d[i];
 }
 
 pDataGrid2d SdfMeshVariable::get2dMesh(int i)
 {
-  if (rank!=2) throw GenericException("Wrong mesh dimension!");
+  if (rank!=2) throw msdf::GenericException("Wrong mesh dimension!");
   return mesh2d[i];
 }
 
 pDataGrid3d SdfMeshVariable::get3dMesh(int i)
 {
-  if (rank!=3) throw GenericException("Wrong mesh dimension!");
+  if (rank!=3) throw msdf::GenericException("Wrong mesh dimension!");
   return mesh3d[i];
 }
 
@@ -142,7 +142,7 @@ void SdfMeshVariable::readData(pIstream sdfStream, pSdfFileHeader header, SdfBlo
         break;
     }
   }
-  else throw GenericException("CFD file contains unsupported precision data!");
+  else throw msdf::GenericException("CFD file contains unsupported precision data!");
 }
 
 
@@ -166,7 +166,7 @@ void SdfMeshVariable::readDataByPrecision(pIstream sdfStream, pSdfFileHeader hea
       this->readMeshData(sdfStream, header, block, rt, *mesh3d.back());
       break;
     default:
-      throw GenericException("CFD file contains mesh data with rank other than 1,2 or 3!");
+      throw msdf::GenericException("CFD file contains mesh data with rank other than 1,2 or 3!");
       break;
   }
 }
@@ -272,7 +272,7 @@ void SdfMeshVariable::readLagrangianDataByPrecision(pIstream sdfStream, pSdfFile
       this->readLagrangianMeshData(sdfStream, header, block, rt, *mesh3d.back());
       break;
     default:
-      throw GenericException("CFD file contains mesh data with rank other than 1,2 or 3!");
+      throw msdf::GenericException("CFD file contains mesh data with rank other than 1,2 or 3!");
       break;
   }
 }

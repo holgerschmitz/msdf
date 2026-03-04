@@ -4,7 +4,7 @@ cmake_policy(VERSION 3.12)
 # set the project name
 project(msdf)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -43,7 +43,8 @@ add_executable(msdf
     src/screen.cpp
     src/sdfblock.cpp
     src/sdfdatatypes.cpp
-    src/tohdf.cpp 
+    src/commands/joinslices.cpp 
+    src/commands/tohdf.cpp 
     src/common/sdffile.cpp
     src/common/sdfheader.cpp
     src/common/sdfio.cpp
