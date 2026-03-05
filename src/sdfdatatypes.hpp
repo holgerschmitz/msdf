@@ -195,4 +195,24 @@ class SdfPointMesh : public SdfBlockData
 typedef boost::shared_ptr<SdfPointMesh> pSdfPointMesh;
 
 
+/**
+ * Reads a constant block from an SDF file.
+ *
+ * A constant block stores a single scalar value directly in the metadata
+ * section at offset m (block_header_length) from the start of the block.
+ */
+class SdfConstant : public SdfBlockData
+{
+  private:
+    SdfBlockHeader block;
+    double value;
+  public:
+    SdfConstant(pIstream sdfStream, pSdfFileHeader header, SdfBlockHeader &block_);
+    SdfBlockType getBlockType() { return block.getBlockType(); }
+    double getValue() const { return value; }
+};
+
+typedef boost::shared_ptr<SdfConstant> pSdfConstant;
+
+
 #endif /* SDFDATATYPES_H_ */

@@ -8,6 +8,8 @@
 
 #include "dataio.hpp"
 
+#include <boost/make_shared.hpp>
+
 namespace po = boost::program_options;
 
 
@@ -22,52 +24,70 @@ void SdfMeshDataImpl::readData()
   data = sdfFile->getBlockHeader(blockName)->getData(*sdfFile);
   if ((data->getBlockType() != sdf_plain_variable)
       && (data->getBlockType() != sdf_point_variable)
-      && (data->getBlockType() != sdf_point_mesh))
+      && (data->getBlockType() != sdf_point_mesh)
+      && (data->getBlockType() != sdf_constant))
     throw msdf::GenericException("Block contains a data type that is not compatible with this action!");
 
-  if (data->getBlockType() == sdf_point_mesh)
+  mData = nullptr;
+  pmData = nullptr;
+  cData = nullptr;
+
+  if (data->getBlockType() == sdf_constant)
   {
-    mData = nullptr;
+    cData = dynamic_cast<SdfConstant*>(&(*data));
+    constantGrid = boost::make_shared<DataGrid1d>(GridIndex1d(1));
+    (*constantGrid)(0) = cData->getValue();
+  }
+  else if (data->getBlockType() == sdf_point_mesh)
+  {
     pmData = dynamic_cast<SdfPointMesh*>(&(*data));
   }
   else
   {
-    pmData = nullptr;
     mData = &(dynamic_cast<SdfMeshVariable&>(*data));
   }
 }
 
 int SdfMeshDataImpl::getRank() {
+  if (cData) return 1;
   if (pmData) return 1;  // point_mesh data is always returned as 1D arrays
   return mData->getRank();
 }
 
 int SdfMeshDataImpl::getCount() {
+  if (cData) return 1;
   if (pmData) return pmData->getCount();
   return mData->getCount();
 }
 
 pDataGrid1d SdfMeshDataImpl::get1dMesh(int i) {
+  if (cData) {
+    return constantGrid;
+  }
   if (pmData) return pmData->get1dMesh(i);
   return mData->get1dMesh(i);
 }
 
 pDataGrid2d SdfMeshDataImpl::get2dMesh(int i) {
+  if (cData) throw msdf::GenericException("constant data is scalar only");
   if (pmData) throw msdf::GenericException("point_mesh data is 1D only");
   return mData->get2dMesh(i);
 }
 
 pDataGrid3d SdfMeshDataImpl::get3dMesh(int i) {
+  if (cData) throw msdf::GenericException("constant data is scalar only");
   if (pmData) throw msdf::GenericException("point_mesh data is 1D only");
   return mData->get3dMesh(i);
 }
 
 double SdfMeshDataImpl::getMin(int i) {
+  if (cData) return cData->getValue();
   if (pmData) return pmData->getMin(i);
   return mData->getMin(i);
 }
 
 double SdfMeshDataImpl::getMax(int i) {
+  if (cData) return cData->getValue();
   if (pmData) return pmData->getMax(i);
   return mData->getMax(i);
 }

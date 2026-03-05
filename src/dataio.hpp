@@ -50,6 +50,8 @@ class SdfMeshDataImpl : public MeshDataImpl
     pSdfBlockData data;
     SdfMeshVariable *mData;
     SdfPointMesh *pmData;
+    SdfConstant *cData;
+    pDataGrid1d constantGrid;
 
     std::string blockName;
     std::string inputName;

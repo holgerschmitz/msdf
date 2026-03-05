@@ -679,3 +679,50 @@ void SdfPointMesh::readDataByPrecision(pIstream sdfStream, pSdfFileHeader header
     }
   }
 }
+
+
+//==============================================================================
+//================================  SdfConstant  ===============================
+//==============================================================================
+
+SdfConstant::SdfConstant(pIstream sdfStream, pSdfFileHeader header, SdfBlockHeader &block_)
+  : block(block_)
+{
+  // The constant value is stored in the metadata section at offset m
+  // (block_header_length) from the start of the block.
+  sdfStream->seekg(block.getMetaDataOffset());
+
+  switch (block.getDataType())
+  {
+    case sdf_real4:
+    {
+      float fval;
+      msdf::detail::readValue(*sdfStream, fval);
+      value = static_cast<double>(fval);
+      break;
+    }
+    case sdf_real8:
+    {
+      double dval;
+      msdf::detail::readValue(*sdfStream, dval);
+      value = dval;
+      break;
+    }
+    case sdf_integer4:
+    {
+      int32_t ival;
+      msdf::detail::readValue(*sdfStream, ival);
+      value = static_cast<double>(ival);
+      break;
+    }
+    case sdf_integer8:
+    {
+      int64_t ival;
+      msdf::detail::readValue(*sdfStream, ival);
+      value = static_cast<double>(ival);
+      break;
+    }
+    default:
+      throw DataTypeUnsupportedException(block.getName(), block.getDataTypeStr());
+  }
+}
